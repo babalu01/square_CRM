@@ -67,6 +67,8 @@ return [
         'Expenses' =>  array('create_expenses', 'manage_expenses', 'edit_expenses', 'delete_expenses'),
         'Expense types' =>  array('create_expense_types', 'manage_expense_types', 'edit_expense_types', 'delete_expense_types'),
         'Milestones' =>  array('create_milestones', 'manage_milestones', 'edit_milestones', 'delete_milestones'),
-        'System Notifications' =>  array('manage_system_notifications', 'delete_system_notifications')
+        'System Notifications' =>  array('manage_system_notifications', 'delete_system_notifications'),
+        'policies' =>  array('create_policies', 'Manage_policies', 'edit_policies', 'delete_policies'),
+
     ]
 ];

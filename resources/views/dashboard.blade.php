@@ -2,6 +2,17 @@
 @section('title')
 <?= get_label('dashboard', 'Dashboard') ?>
 @endsection
+<style>
+   .mt-2 {
+    display: none;
+}
+.fixed-table-toolbar {
+    display: none;
+}
+table#projects_table {
+    display: none;
+}
+</style>
 @section('content')
 @authBoth
 <div class="container-fluid">
@@ -102,7 +113,7 @@
             @endforeach
         </div>
 
-        <div class="row">
+        <!-- <div class="row">
             @if ($auth_user->can('manage_projects'))
             <div class="col-md-4 col-sm-12">
                 <div class="card overflow-hidden mb-4 statisticsDiv">
@@ -277,7 +288,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
     @if(!isClient() && $auth_user->can('manage_users'))
     <div class="nav-align-top">
@@ -383,7 +394,7 @@
         </div>
     </div>
     @endif
-    @if ($auth_user->can('manage_projects') || $auth_user->can('manage_tasks'))
+    <!-- @if ($auth_user->can('manage_projects') || $auth_user->can('manage_tasks'))
     <div class="nav-align-top {{$auth_user->can('manage_users')?' mt-4':''}}">
         <ul class="nav nav-tabs" role="tablist">
             @if ($auth_user->can('manage_projects'))
@@ -440,7 +451,7 @@
             @endif
         </div>
     </div>
-    @endif
+    @endif -->
     <!-- ------------------------------------------- -->
     <?php
     $titles = [];

@@ -50,6 +50,7 @@ use App\Http\Controllers\EstimatesInvoicesController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\PolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -521,6 +522,13 @@ Route::middleware(['CheckInstallation'])->group(function () {
             Route::post('/settings/update-system', [UpdaterController::class, 'update'])->middleware(['demo_restriction']);
 
             Route::post('/settings/notifications/test', [SettingsController::class, 'testNotificationSettings'])->middleware(['demo_restriction']);
+
+
+            // Policy Management Routes
+           
+
+
+            
         });
         Route::middleware(['has_workspace'])->group(function () {
             Route::get('/search', [SearchController::class, 'search']);
@@ -704,4 +712,35 @@ Route::middleware(['CheckInstallation'])->group(function () {
             Route::post('/save-column-visibility', [PreferenceController::class, 'saveColumnVisibility']);
         });
     });
+    Route::prefix('policies')->group(function () {
+        // Display the form to create a new policy
+        Route::get('/create', [PolicyController::class, 'create'])->name('policies.create');
+        
+        // Store a newly created policy in the database
+        Route::post('/', [PolicyController::class, 'store'])->name('policies.store');
+        
+        // Display the specified policy
+        Route::get('/{policy}', [PolicyController::class, 'show'])->name('policies.show');
+        
+        // Show the form for editing the specified policy
+        Route::get('/{policy}/edit', [PolicyController::class, 'edit'])->name('policies.edit');
+        
+        // Update the specified policy in the database
+        Route::put('/{policy}', [PolicyController::class, 'update'])->name('policies.update');
+        
+        // Remove the specified policy from the database
+        Route::delete('/{policy}', [PolicyController::class, 'destroy'])->name('policies.destroy');
+        
+        // Display a listing of the policies
+        Route::get('/', [PolicyController::class, 'index'])->name('policies.index');
+
+
+        
+        
+        
+        
+    });
+    Route::get('/import/policy', [PolicyController::class, 'importpolicy'])->name('Policies.imports');
+    Route::post('/import', [PolicyController::class, 'import'])->name('Policies.import');
+
 });

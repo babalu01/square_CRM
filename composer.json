@@ -20,6 +20,7 @@
         "laravel/ui": "^4.2",
         "laraveldaily/laravel-invoices": "^3.3",
         "league/flysystem-aws-s3-v3": "^3.22",
+        "maatwebsite/excel": "^3.1",
         "munafio/chatify": "^1.6",
         "protonemedia/laravel-cross-eloquent-search": "^3.1",
         "psr/container": "^2.0",

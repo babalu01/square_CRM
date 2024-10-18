@@ -53,7 +53,7 @@ $pendingLeaveRequestsCount = $query->count();
             <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>
     </div>
-    <div class="btn-group dropend px-2">
+    <div class="btn-group dropend px-2 d-none">
         <button type="button" class="btn btn-primary {{getAuthenticatedUser()->hasVerifiedEmail() || getAuthenticatedUser()->hasRole('admin')?'dropdown-toggle':''}}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{ strlen($current_workspace_title) > 22 ? substr($current_workspace_title, 0, 22) . '...' : $current_workspace_title }}
         </button>
@@ -130,7 +130,7 @@ $pendingLeaveRequestsCount = $query->count();
                 <div><?= get_label('dashboard', 'Dashboard') ?></div>
             </a>
         </li>
-        @if ($user->can('manage_projects') || $user->can('manage_tags'))
+        <!-- @if ($user->can('manage_projects') || $user->can('manage_tags'))
         <li class="menu-item {{ Request::is('projects') || Request::is('tags/*') || Request::is('projects/*') ? 'active open' : '' }}">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-briefcase-alt-2 text-success"></i>
@@ -169,6 +169,13 @@ $pendingLeaveRequestsCount = $query->count();
             </a>
         </li>
         @endif
+        <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ route('policies.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-task text-primary"></i>
+                <div><?= get_label('Policies', 'Policies') ?></div>
+            </a>
+        </li>
+
         @if ($user->can('manage_statuses'))
         <li class="menu-item {{ Request::is('status/manage') ? 'active' : '' }}">
             <a href="{{ url('status/manage') }}" class="menu-link">
@@ -192,7 +199,13 @@ $pendingLeaveRequestsCount = $query->count();
                 <div><?= get_label('workspaces', 'Workspaces') ?></div>
             </a>
         </li>
-        @endif
+        @endif -->
+        <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ route('policies.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-task text-primary"></i>
+                <div><?= get_label('Policies', 'Policies') ?></div>
+            </a>
+        </li>
         @if (Auth::guard('web')->check())
         <li class="menu-item {{ Request::is('chat') || Request::is('chat/*') ? 'active' : '' }}">
             <a href="{{ url('chat') }}" class="menu-link">
@@ -205,7 +218,7 @@ $pendingLeaveRequestsCount = $query->count();
             </a>
         </li>
         @endif
-        <li class="menu-item {{ Request::is('todos') || Request::is('todos/*') ? 'active' : '' }}">
+        <!-- <li class="menu-item {{ Request::is('todos') || Request::is('todos/*') ? 'active' : '' }}">
             <a href="{{ url('todos') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bx-list-check text-dark'></i>
                 <div><?= get_label('todos', 'Todos') ?>
@@ -226,7 +239,7 @@ $pendingLeaveRequestsCount = $query->count();
                 </div>
             </a>
         </li>
-        @endif
+        @endif -->
         @if ($user->can('manage_users'))
         <li class="menu-item {{ Request::is('users') || Request::is('users/*') ? 'active' : '' }}">
             <a href="{{ url('users') }}" class="menu-link">
@@ -239,11 +252,11 @@ $pendingLeaveRequestsCount = $query->count();
         <li class="menu-item {{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
             <a href="{{ url('clients') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-group text-warning"></i>
-                <div><?= get_label('clients', 'Clients') ?></div>
+                <div><?= get_label('Agents', 'Agents') ?></div>
             </a>
-        </li>
+        </li>   
         @endif
-        @if ($user->can('manage_contracts') || $user->can('manage_contract_types'))
+        <!-- @if ($user->can('manage_contracts') || $user->can('manage_contract_types'))
         <li class="menu-item {{ Request::is('contracts') || Request::is('contracts/*') ? 'active open' : '' }}">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-news text-success"></i>
@@ -266,7 +279,7 @@ $pendingLeaveRequestsCount = $query->count();
                 @endif
             </ul>
         </li>
-        @endif
+        @endif -->
 
         @if ($user->can('manage_payslips') || $user->can('manage_allowances') || $user->can('manage_deductions'))
         <li class="menu-item {{ Request::is('payslips') || Request::is('payslips/*') || Request::is('allowances') || Request::is('deductions') ? 'active open' : '' }}">
@@ -300,7 +313,7 @@ $pendingLeaveRequestsCount = $query->count();
         </li>
         @endif
 
-        @if ($user->can('manage_estimates_invoices') || $user->can('manage_expenses') || $user->can('manage_payment_methods') || $user->can('manage_expense_types') || $user->can('manage_payments') || $user->can('manage_taxes') || $user->can('manage_units') || $user->can('manage_items'))
+        <!-- @if ($user->can('manage_estimates_invoices') || $user->can('manage_expenses') || $user->can('manage_payment_methods') || $user->can('manage_expense_types') || $user->can('manage_payments') || $user->can('manage_taxes') || $user->can('manage_units') || $user->can('manage_items'))
         <li class="menu-item {{ Request::is('estimates-invoices') || Request::is('estimates-invoices/*') || Request::is('taxes') || Request::is('payment-methods') || Request::is('payments') || Request::is('units') || Request::is('items') || Request::is('expenses') || Request::is('expenses/*') ? 'active open' : '' }}">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-box text-success"></i>
@@ -365,7 +378,7 @@ $pendingLeaveRequestsCount = $query->count();
                 @endif
             </ul>
         </li>
-        @endif
+        @endif -->
 
         <li class="menu-item {{ Request::is('notes') || Request::is('notes/*') ? 'active' : '' }}">
             <a href="{{ url('notes') }}" class="menu-link">

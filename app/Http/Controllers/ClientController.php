@@ -25,6 +25,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use App\Rules\UniqueEmailPassword;
+use App\Models\Policy;
 
 class ClientController extends Controller
 {
@@ -620,11 +621,11 @@ class ClientController extends Controller
                         '</a>';
                 }
 
-                if ($canDelete) {
-                    $actions .= '<button title="' . get_label('delete', 'Delete') . '" type="button" class="btn delete" data-id="' . $client->id . '" data-type="clients">' .
-                        '<i class="bx bx-trash text-danger mx-1"></i>' .
-                        '</button>';
-                }
+                // if ($canDelete) {
+                //     $actions .= '<button title="' . get_label('delete', 'Delete') . '" type="button" class="btn delete" data-id="' . $client->id . '" data-type="clients">' .
+                //         '<i class="bx bx-trash text-danger mx-1"></i>' .
+                //         '</button>';
+                // }
 
                 $actions = $actions ?: '-';
 
@@ -660,6 +661,8 @@ class ClientController extends Controller
 
                 $phone = !empty($client->country_code) ? $client->country_code . ' ' . $client->phone : $client->phone;
 
+                $policiesCount = Policy::where('agent_name', $client->id)->count();
+
                 return [
                     'id' => $client->id,
                     'first_name' => $client->first_name,
@@ -672,18 +675,10 @@ class ClientController extends Controller
                     'internal_purpose' => $client->internal_purpose,
                     'created_at' => format_date($client->created_at, true),
                     'updated_at' => format_date($client->updated_at, true),
-                    'assigned' => '<div class="d-flex justify-content-start align-items-center">' .
+                        'assigned' => '<div class="d-flex justify-content-start align-items-center">' .
                         '<div class="text-center mx-4">' .
-                        '<a href="javascript:void(0);" class="viewAssigned" data-type="projects" data-id="' . 'client_' . $client->id . '" data-client="' . $client->first_name . ' ' . $client->last_name . '">' .
-                        '<span class="badge rounded-pill bg-primary">' . (isAdminOrHasAllDataAccess('client', $client->id) ? count($workspace->projects) : count($client->projects)) . '</span>' .
-                        '</a>' .
-                        '<div>' . get_label('projects', 'Projects') . '</div>' .
-                        '</div>' .
-                        '<div class="text-center">' .
-                        '<a href="javascript:void(0);" class="viewAssigned" data-type="tasks" data-id="' . 'client_' . $client->id . '" data-client="' . $client->first_name . ' ' . $client->last_name . '">' .
-                        '<span class="badge rounded-pill bg-primary">' . (isAdminOrHasAllDataAccess('client', $client->id) ? count($workspace->tasks) : $client->tasks()->count()) . '</span>' .
-                        '</a>' .
-                        '<div>' . get_label('tasks', 'Tasks') . '</div>' .
+                        '<span class="badge rounded-pill bg-secondary">' . $policiesCount . '</span>' .
+                        '<div>' . get_label('Policies', 'Policies') . '</div>' .
                         '</div>' .
                         '</div>',
                     'actions' => $actions

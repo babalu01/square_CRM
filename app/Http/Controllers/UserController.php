@@ -836,11 +836,11 @@ class UserController extends Controller
                             '</a>';
                     }
 
-                    if ($canDelete) {
-                        $actions .= '<button title="' . get_label('delete', 'Delete') . '" type="button" class="btn delete" data-id="' . $user->id . '" data-type="users">' .
-                            '<i class="bx bx-trash text-danger mx-1"></i>' .
-                            '</button>';
-                    }
+                    // if ($canDelete) {
+                    //     $actions .= '<button title="' . get_label('delete', 'Delete') . '" type="button" class="btn delete" data-id="' . $user->id . '" data-type="users">' .
+                    //         '<i class="bx bx-trash text-danger mx-1"></i>' .
+                    //         '</button>';
+                    // }
 
                     $actions = $actions ?: '-';
 

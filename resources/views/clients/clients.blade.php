@@ -34,12 +34,12 @@ $visibleColumns = getUserPreferences('clients');
                         <option value="0">{{get_label('deactive','Deactive')}}</option>
                     </select>
                 </div>
-                <div class="col-md-4 mb-3">
+                <!-- <div class="col-md-4 mb-3">
                     <select class="form-select js-example-basic-multiple" id="client_internal_purpose_filter" aria-label="Default select example" data-placeholder="<?= get_label('select_types', 'Select types') ?>" data-allow-clear="true" multiple>
                         <option value="0">{{get_label('normal','Normal')}}</option>
                         <option value="1">{{get_label('internal_purpose','Internal Purpose')}}</option>
                     </select>
-                </div>
+                </div> -->
             </div>
             <div class="table-responsive text-nowrap">
                 <input type="hidden" id="data_type" value="clients">

@@ -89,7 +89,7 @@ if ($remainingUnreadNotificationsCount < 0) {
 
                 @endif
                 <li class="nav-item navbar-dropdown dropdown ml-1">
-                    <div class="btn-group dropend px-1">
+                    <div class="btn-group dropend px-1 d-none">
                         <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="icon-only"><i class='bx bx-globe'></i></span> <span class="language-name"><?= $current_language[0]['name'] ?? '' ?></span>
                         </button>

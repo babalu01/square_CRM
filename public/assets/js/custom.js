@@ -1820,7 +1820,7 @@ $(document).ready(function () {
             var data_reload = $toolbar.closest('.table-responsive').find('#data_reload').val() || 0;
             var action_class = 'action_delete_' + (['project-media', 'task-media'].includes(data_type) ? 'media' : data_type.replace('-', '_'));
             // Create the "Delete selected" button
-            var $deleteButton = $('<div class="columns columns-left btn-group float-left ' + action_class + '">' +
+            var $deleteButton = $('<div class="columns columns-left btn-group float-left d-none ' + action_class + '">' +
                 '<button type="button" class="btn btn-outline-danger float-left delete-selected" data-type="' + data_type + '" data-table="' + data_table + '" data-reload="' + data_reload + '">' +
                 '<i class="bx bx-trash"></i> ' + label_delete_selected + '</button>' +
                 '</div>');
