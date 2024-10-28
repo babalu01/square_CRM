@@ -1,17 +1,27 @@
 @extends('layout')
 
 @section('content')
+@php 
+$user = getAuthenticatedUser();
+@endphp
 <div class="container table-container">
     <h5>Policies</h5>
     <div class="row mb-3">
         <div class="col-md-12 d-flex justify-content-end">
+        @if($user->can('create_policies'))
             <a href="{{ route('policies.create') }}" class="btn btn-primary mb-3">
             <i class="tf-icon tf-icon-plus"></i>
            Add Policy
             </a>&nbsp;&nbsp;
+           
             <a href="{{ route('Policies.imports') }}" class="btn btn-success mb-3">
             <i class="tf-icon tf-icon-import"></i>
             Import Policy
+            </a>&nbsp;&nbsp;
+            @endif
+            <a href="{{ route('policies.export') }}" class="btn btn-outline-danger mb-3">
+            <i class="tf-icon tf-icon-import"></i>
+            Export Policy
             </a>
         </div>
     </div>

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Status;
+use App\Models\policy;
 
 class HomeController extends Controller
 {
@@ -43,7 +44,24 @@ class HomeController extends Controller
             ->get();
         $total_todos = $this->user->todos;
         $meetings = isAdminOrHasAllDataAccess() ? $this->workspace->meetings ?? [] : $this->user->meetings ?? [];
-        return view('dashboard', ['users' => $users, 'clients' => $clients, 'projects' => $projects, 'tasks' => $tasks, 'todos' => $todos, 'total_todos' => $total_todos, 'meetings' => $meetings, 'auth_user' => $this->user]);
+        
+        // Count active and inactive policies
+        $currentDate = now()->toDateString();
+        $activePolicies = policy::where('end_date', '>', $currentDate)->count();
+        $inactivePolicies = policy::where('end_date', '<', $currentDate)->count();
+
+        return view('dashboard', [
+            'users' => $users,
+            'clients' => $clients,
+            'projects' => $projects,
+            'tasks' => $tasks,
+            'todos' => $todos,
+            'total_todos' => $total_todos,
+            'meetings' => $meetings,
+            'auth_user' => $this->user,
+            'activePolicies' => $activePolicies,
+            'inactivePolicies' => $inactivePolicies
+        ]);
     }
 
     public function upcoming_birthdays()

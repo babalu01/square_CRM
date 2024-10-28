@@ -16,7 +16,17 @@ class InvalidPolicyExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return collect($this->invalidPolicies);
+        return collect($this->invalidPolicies)->map(function ($item) {
+            return [
+                $item['row'][2] ?? '', // Policy Number
+                $item['row'][5] ?? '', // Type
+                $item['row'][3] ?? '', // Provider
+                $item['row'][12] ?? '', // Premium Amount
+                $item['row'][13] ?? '', // Start Date
+                $item['row'][14] ?? '', // End Date
+                implode(', ', $item['errors']) // Errors
+            ];
+        });
     }
 
     public function headings(): array

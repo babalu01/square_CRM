@@ -69,6 +69,7 @@ return [
         'Milestones' =>  array('create_milestones', 'manage_milestones', 'edit_milestones', 'delete_milestones'),
         'System Notifications' =>  array('manage_system_notifications', 'delete_system_notifications'),
         'policies' =>  array('create_policies', 'Manage_policies', 'edit_policies', 'delete_policies'),
+        'grid' =>  array('create_grid', 'Manage_grid', 'edit_grid', 'delete_grid'),
 
     ]
 ];

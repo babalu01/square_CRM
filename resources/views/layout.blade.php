@@ -111,11 +111,11 @@
     @if (getAuthenticatedUser() && getAuthenticatedUser()->can('create_timesheet'))
     <!-- Timer image -->
     <div onclick="open_timer_section()">
-        <span>
+        <!-- <span>
             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-original-title="<?= get_label('time_tracker', 'Time tracker') ?>">
                 <img src="{{ asset('storage/94150-clock.png') }}" class="timer-img" id="timer-image" alt="Timer" data-bs-toggle="modal" data-bs-target="#timerModal">
             </a>
-        </span>
+        </span> -->
     </div>
     @endif
     <!-- Core JS -->
@@ -188,6 +188,12 @@
     <script src="{{asset('assets/js/fullcalendar/list/main.js')}}"></script>
     <script src="{{asset('assets/js/fullcalendar/google-calendar/main.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/intlTelInput.min.js"></script>
+
+    <!-- telwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+
+    <!-- telwind -->
     @authBoth
     <script>
         var authUserId = '<?= getAuthenticatedUser()->id ?>';

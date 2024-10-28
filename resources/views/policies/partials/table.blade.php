@@ -12,8 +12,10 @@
                 <th>Premium Amount</th>
                 <th>Status</th>
                 <th>Start Date</th>
-                <th>End Date</th>
+                <th>End Date</th>   
+                @if($user->can('edit_policies'))
                 <th>Action</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -26,13 +28,15 @@
                     <td>{{ $policy->client->first_name ?? "N/A" }} {{ $policy->client->last_name ?? "" }}</td>
                     <td>{{ $policy->type }}</td>
                     <td>{{ $policy->provider }}</td>
-                    <td>${{ number_format($policy->premium_amount, 2) }}</td>
+                    <td>₹{{ number_format($policy->premium_amount, 2) }}</td>
                     <td>{{ $policy->status }}</td>
                     <td>{{ $policy->start_date }}</td>
                     <td>{{ $policy->end_date }}</td>
+                @if($user->can('edit_policies'))
                     <td>
-                        <a href="{{ route('policies.show', $policy->id) }}">View More ></a>
+                   <a href="{{ route('policies.edit', $policy->id) }}"> <i class="bx bx-edit mx-1"></i></a>
                     </td>
+                    @endif
                 </tr>
             @endforeach
         </tbody>

@@ -51,6 +51,12 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\ClaimController;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\PolicyDocumentController;
+use App\Http\Controllers\CommissionRateImportController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -732,15 +738,58 @@ Route::middleware(['CheckInstallation'])->group(function () {
         Route::delete('/{policy}', [PolicyController::class, 'destroy'])->name('policies.destroy');
         
         // Display a listing of the policies
-        Route::get('/', [PolicyController::class, 'index'])->name('policies.index');
-
-
+        Route::get('/', [PolicyController::class, 'index'])->name('policies.index');  
+    });
+    Route::prefix('claims')->group(function () {
+        // Display a listing of the claims
+        Route::get('/', [ClaimController::class, 'index'])->name('claims.index');
         
+        // Display the form to create a new claim
+        Route::get('/create', [ClaimController::class, 'create'])->name('claims.create');
         
+        // Store a newly created claim in the database
+        Route::post('/', [ClaimController::class, 'store'])->name('claims.store');
         
+        // Display the specified claim
+        Route::get('/{claim}', [ClaimController::class, 'show'])->name('claims.show');
         
+        // Show the form for editing the specified claim
+        Route::get('/{claim}/edit', [ClaimController::class, 'edit'])->name('claims.edit');
+        
+        // Update the specified claim in the database
+        Route::put('/{claim}', [ClaimController::class, 'update'])->name('claims.update');
+        
+        // Remove the specified claim from the database
+        Route::delete('/{claim}', [ClaimController::class, 'destroy'])->name('claims.destroy');
     });
     Route::get('/import/policy', [PolicyController::class, 'importpolicy'])->name('Policies.imports');
     Route::post('/import', [PolicyController::class, 'import'])->name('Policies.import');
+
+// download excel report of policies
+Route::get('/export-Policies', function () {
+    return Excel::download(new UsersExport, 'users.xlsx');
+})->name('policies.export');
+
+// ... existing routes ...
+Route::get('/invalid-policies', [PolicyController::class, 'showInvalidPolicies'])->name('policies.invalid');
+Route::get('/upload-policy-documents', [PolicyDocumentController::class, 'showUploadForm'])->name('upload.form');
+Route::post('/upload-policy-documents', [PolicyDocumentController::class, 'upload'])->name('upload.policy.documents');
+// routes/web.php
+Route::delete('/documents/{id}', [PolicyDocumentController::class, 'destroy'])->name('documents.destroy');
+Route::post('/import-commission-rates', [CommissionRateImportController::class, 'import'])->name('import.commissionRates');
+Route::get('/commission-rates/{uploadId}', [CommissionRateImportController::class, 'showCommissionRates'])->name('commission.rates');
+
+
+Route::get('/grid-upload-log', [CommissionRateImportController::class, 'gridUploadLog'])->name('grid.upload.log');
+Route::post('/update-commission-rates', [CommissionRateImportController::class, 'updateCommissionRates'])->name('update.commission.rates');
+    Route::delete('/delete-commission-log/{id}', [CommissionRateImportController::class, 'deleteCommissionRates'])->name('delete.commission.log');  
+
+
+// agent routes
+
+Route::get('/agent/documents', [PolicyDocumentController::class, 'agentdocuments'])->name('agent.documents');
+
+// agent routes
+
 
 });

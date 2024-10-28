@@ -37,19 +37,20 @@ table#projects_table {
         $tiles = [
         'manage_projects' => [
         'permission' => 'manage_projects',
-        'icon' => 'bx bx-briefcase-alt-2 text-success',
-        'label' => get_label('total_projects', 'Total projects'),
-        'count' => is_countable($projects) && count($projects) > 0 ? count($projects) : 0,
-        'url' => url(getUserPreferences('projects', 'default_view')),
+        'icon' => 'bx bx-task text-success',
+        'label' => get_label('total_policies', 'Total Active Policies'),
+        'count' => $activePolicies,
+        'url' => route('policies.index'),
         'link_color' => 'text-success',
         ],
         'manage_tasks' => [
         'permission' => 'manage_tasks',
-        'icon' => 'bx bx-task text-primary',
-        'label' => get_label('total_tasks', 'Total tasks'),
-        'count' => $tasks,
-        'url' => url(getUserPreferences('tasks', 'default_view')),
-        'link_color' => 'text-primary',
+        'icon' => 'bx bx-task text-danger',
+        'label' => get_label('total_inactive', 'Total Inactive Policies'),
+        'count' => $inactivePolicies,
+        'url' => route('policies.index'),
+
+        'link_color' => 'text-danger',
         ],
         'manage_users' => [
         'permission' => 'manage_users',
@@ -62,7 +63,7 @@ table#projects_table {
         'manage_clients' => [
         'permission' => 'manage_clients',
         'icon' => 'bx bxs-user-detail text-info',
-        'label' => get_label('total_clients', 'Total clients'),
+        'label' => get_label('total_agents', 'Total Agents'),
         'count' => is_countable($clients) && count($clients) > 0 ? count($clients) : 0,
         'url' => url('clients'),
         'link_color' => 'text-info',

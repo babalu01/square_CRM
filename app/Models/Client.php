@@ -39,7 +39,8 @@ class Client extends Authenticatable implements MustVerifyEmail
         'acct_create_mail_sent',
         'email_verification_mail_sent',
         'internal_purpose',
-        'fcm_token'
+        'fcm_token',
+        'client_id' // Added fillable for client_id
     ];
 
     /**

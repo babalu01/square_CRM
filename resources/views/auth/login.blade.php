@@ -13,7 +13,7 @@
 <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-4xl flex flex-col md:flex-row">
         <div class="w-full md:w-1/2 p-8">
-            <img alt="Illustration of a man and woman at a reception desk" class="w-full h-full object-cover" height="400" src="https://storage.googleapis.com/a1aa/image/YfeCt7e6yedeRgkRU9T8iYfZfsvURQK5F5lbw8WQ2kfJv1eNnA.jpg" width="400"/>
+            <img alt="Illustration of a man and woman at a reception desk" class="w-full h-full object-cover" height="400" src="https://storage.googleapis.com/a1aa/image/TbVarCvtJrI5Cd8N3ZknmNIEpkQDj6HMWAGtUdY6r7p83E6E.jpg" width="400"/>
         </div>
         <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
             <div class="mb-8">

@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use App\Rules\UniqueEmailPassword;
 use App\Models\Policy;
+use App\Models\PolicyDocument;
 
 class ClientController extends Controller
 {
@@ -169,6 +170,12 @@ class ClientController extends Controller
                 $formFields['photo'] = 'photos/no-image.jpg';
             }
 
+            // Generate a unique 6-digit client ID
+            do {
+                $clientId = mt_rand(100000, 999999);
+            } while (Client::where('client_id', $clientId)->exists());
+            $formFields['client_id'] = $clientId;
+
             $role_id = Role::where('guard_name', 'client')->first()->id;
             $workspace = Workspace::find(getWorkspaceId());
 
@@ -243,11 +250,23 @@ class ClientController extends Controller
     {
         $workspace = Workspace::find(getWorkspaceId());
         $client = Client::findOrFail($id);
+        $clientdocuments = PolicyDocument::where('agent_id', '=', $client->client_id)->get();
+
         $projects = isAdminOrHasAllDataAccess('client', $id) ? $workspace->projects : $client->projects;
         $tasks = $client->tasks()->count();
         $users = $workspace->users;
         $clients = $workspace->clients;
-        return view('clients.client_profile', ['client' => $client, 'projects' => $projects, 'tasks' => $tasks, 'users' => $users, 'clients' => $clients, 'auth_user' => getAuthenticatedUser()]);
+        $policies = Policy::where('agent_name', $id)->get();
+        return view('clients.client_profile', [
+            'client' => $client,
+            'projects' => $projects,
+            'tasks' => $tasks,
+            'users' => $users,
+            'clients' => $clients,
+            'auth_user' => getAuthenticatedUser(),
+            'policies' => $policies,
+            'clientdocuments'=>$clientdocuments
+        ]);
     }
 
     /**
@@ -356,6 +375,15 @@ class ClientController extends Controller
             $internal_purpose = $request->has('internal_purpose') && $request->input('internal_purpose') == 'on' ? 1 : 0;
             if ($internal_purpose && $request->has('password') && !empty($request->input('password'))) {
                 $request->merge(['password' => NULL]);
+            }
+
+            // Generate a unique client_id if it is null
+            if (is_null($client->client_id)) {
+                do {
+                    $client_id = mt_rand(100000, 999999); // Generate a 6-digit unique client ID
+                } while (Client::where('client_id', $client_id)->exists());
+                $client->client_id = $client_id;
+                $client->save(); // Save the client with the new client_id
             }
         }
         try {

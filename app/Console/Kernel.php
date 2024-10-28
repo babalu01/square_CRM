@@ -4,9 +4,20 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\SendPolicyEndReminders; // Import your command
 
 class Kernel extends ConsoleKernel
 {
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        SendPolicyEndReminders::class, // Register your command here
+        \App\Console\Commands\UpdateExpiredPolicies::class,
+    ];
+
     /**
      * Define the application's command schedule.
      *
@@ -15,8 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
+        $schedule->command('policy:end-reminders')->daily(); // Add your scheduling here
+        $schedule->command('policies:update-status')->daily();
     }
 
     /**

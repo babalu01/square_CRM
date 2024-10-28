@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\PolicyExport;
 use App\Exports\InvalidPolicyExport;
+use Carbon\Carbon;
+
 class PolicyController extends Controller
 {
     public function index(Request $request)
@@ -121,7 +123,28 @@ class PolicyController extends Controller
 
     public function show(Policy $policy)
     {
-        return view('policies.show', compact('policy'));
+        $currentDate = now();
+        $startDate = Carbon::parse($policy->start_date);
+        $endDate = Carbon::parse($policy->end_date);
+
+        $remainingInterval = $currentDate->diff($endDate);
+        $remainingTime = '';
+
+        if ($remainingInterval->y > 0) {
+            $remainingTime .= $remainingInterval->y . ' year' . ($remainingInterval->y > 1 ? 's' : '') . ' ';
+        }
+        if ($remainingInterval->m > 0) {
+            $remainingTime .= $remainingInterval->m . ' month' . ($remainingInterval->m > 1 ? 's' : '') . ' ';
+        }
+        if ($remainingInterval->d > 0) {
+            $remainingTime .= $remainingInterval->d . ' day' . ($remainingInterval->d > 1 ? 's' : '');
+        }
+
+        $remainingTime = trim($remainingTime);
+
+        $totalDays = $startDate->diffInDays($endDate);
+
+        return view('policies.show', compact('policy', 'remainingTime', 'totalDays'));
     }
 
     public function edit(Policy $policy)
@@ -137,15 +160,59 @@ class PolicyController extends Controller
             'policy_number' => 'required|unique:policies,policy_number,' . $policy->id,
             'type' => 'required',
             'provider' => 'required',
-            'premium_amount' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'status' => 'required',
+            'company' => 'nullable',
+            'product' => 'nullable',
+            'mfg_year' => 'nullable|integer',
+            'fuel_type' => 'nullable',
+            'gvw_cc' => 'nullable',
+            'policy_holder_name' => 'nullable',
+            'od' => 'nullable|numeric',
+            'without_gst' => 'nullable|numeric',
+            'total' => 'required|numeric',
+            'registration_number' => 'nullable',
+            'policy_type' => 'nullable',
+            'agent_name' => 'nullable',
+            'broker_direct_code' => 'nullable',
+            'mode_of_payment' => 'nullable',
+            'percentage' => 'nullable|numeric',
+            'commission' => 'nullable|numeric',
+            'tds' => 'nullable|numeric',
+            'final_commission' => 'nullable|numeric',
+            'discount_percentage' => 'nullable|numeric',
+            'discount' => 'nullable|numeric',
+            'payment' => 'nullable|numeric',
+            'cheque_no' => 'nullable',
+            'payment_received' => 'nullable|numeric',
+            'profit' => 'nullable|numeric',
         ]);
+
+        $validatedData['premium_amount'] = $request->total;
 
         $policy->update($validatedData);
 
-        return redirect()->route('policies.show', $policy->id)->with('success', 'Policy updated successfully.');
+        // Update the Excel file
+        // $fileName = 'policies.xlsx';
+        // $filePath = 'public/' . $fileName;
+
+        // if (Storage::exists($filePath)) {
+        //     $existingPolicies = Excel::toCollection(null, $filePath)->first();
+        //     $updatedPolicies = $existingPolicies->map(function ($item) use ($policy) {
+        //         if ($item['id'] == $policy->id) {
+        //             return $policy;
+        //         }
+        //         return $item;
+        //     });
+        // } else {
+        //     $updatedPolicies = collect([$policy]);
+        // }
+
+        // Excel::store(new PolicyExport($updatedPolicies), $fileName, 'public');
+
+        return redirect()->route('policies.show', $policy->id)
+            ->with('success', 'Policy updated successfully and Excel file updated.');
     }
     public function importpolicy(){
         return view('policies.importpolicy');
@@ -248,10 +315,18 @@ class PolicyController extends Controller
             // Export all policies to Excel
             Excel::store(new PolicyExport($existingPolicies), $fileName, 'public');
 
-            // Store invalid policies in a JSON file
+            // Store invalid policies in an Excel file
             if (!empty($invalidPolicies)) {
-                $invalidFileName = 'invalid_policies_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
-                Excel::store(new InvalidPolicyExport($invalidPolicies), $invalidFileName, 'public');
+                $invalidPoliciesFolder = 'invalid_policies';
+                $invalidFileName = now()->format('Y-m-d_H-i-s') . '.xlsx';
+                $invalidFilePath = $invalidPoliciesFolder . '/' . $invalidFileName;
+                
+                // Create the folder if it doesn't exist
+                if (!Storage::exists('public/' . $invalidPoliciesFolder)) {
+                    Storage::makeDirectory('public/' . $invalidPoliciesFolder);
+                }
+
+                Excel::store(new InvalidPolicyExport($invalidPolicies), $invalidFilePath, 'public');
             }
 
             $message = 'Policies imported successfully. ';
@@ -259,7 +334,8 @@ class PolicyController extends Controller
             $message .= count($invalidPolicies) . ' invalid policies found.';
 
             if (!empty($invalidPolicies)) {
-                $message .= ' Invalid policies stored in Excel file.';
+                $message .= ' Invalid policies stored in Excel file. ';
+                $message .= '<a href="' . route('policies.invalid') . '">View Invalid Policies</a>';
             }
 
             return redirect()->back()->with('success', $message);
@@ -302,8 +378,25 @@ class PolicyController extends Controller
         return $agent ? $agent->id : null;  
     }
     
+// invalid policies Page
 
+public function showInvalidPolicies()
+{
+    $directory = 'invalid_policies';
+    $files = Storage::files('public/' . $directory);
+    
+    $invalidPolicies = collect($files)->map(function ($file) use ($directory) {
+        return [
+            'name' => basename($file),
+            'path' => Storage::url($file),
+            'date' => Storage::lastModified($file),
+        ];
+    })->sortByDesc('date');
+
+    return view('policies.invalid', compact('invalidPolicies'));
+}
 
 
 
 }
+

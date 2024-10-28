@@ -130,7 +130,7 @@ $pendingLeaveRequestsCount = $query->count();
                 <div><?= get_label('dashboard', 'Dashboard') ?></div>
             </a>
         </li>
-        <!-- @if ($user->can('manage_projects') || $user->can('manage_tags'))
+         {{-- @if ($user->can('manage_projects') || $user->can('manage_tags'))
         <li class="menu-item {{ Request::is('projects') || Request::is('tags/*') || Request::is('projects/*') ? 'active open' : '' }}">
             <a href="javascript:void(0)" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-briefcase-alt-2 text-success"></i>
@@ -159,9 +159,9 @@ $pendingLeaveRequestsCount = $query->count();
                 @endif
             </ul>
         </li>
-        @endif
+        @endif --}}
 
-        @if ($user->can('manage_tasks'))
+        {{-- @if ($user->can('manage_tasks'))
         <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
             <a href="{{ url(getUserPreferences('tasks', 'default_view')) }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-task text-primary"></i>
@@ -199,13 +199,101 @@ $pendingLeaveRequestsCount = $query->count();
                 <div><?= get_label('workspaces', 'Workspaces') ?></div>
             </a>
         </li>
-        @endif -->
+        @endif  --}}
+
+<!-- grid -->
+
+        <li class="menu-item {{ Request::is('projects') || Request::is('tags/*') || Request::is('projects/*') ? 'active open' : '' }}">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-briefcase-alt-2 text-success"></i>
+                <div><?= get_label('Grid', 'Grid') ?></div>
+            </a>
+            <ul class="menu-sub">
+             
+                <li class="menu-item {{ Request::is('projects') || Request::is('projects/*') && !Request::is('projects/favorite') && !Request::is('projects/list/favorite') ? 'active' : '' }}">
+                    <a href="{{ route('grid.upload.log') }}" class="menu-link">
+                        <div><?= get_label('Grid Logs', 'Grid Logs') ?></div>
+                    </a>
+                </li>
+                <li class="menu-item {{ Request::is('projects/favorite') || Request::is('projects/list/favorite') ? 'active' : '' }}">
+                    <a href="{{ url(getUserPreferences('projects', 'default_view') . '/favorite') }}" class="menu-link">
+                        <div><?= get_label('favorite_projects', 'Favorite projects') ?></div>
+                    </a>
+                </li>
+              
+                @if ($user->can('manage_tags'))
+                <li class="menu-item {{ Request::is('tags/*') ? 'active' : '' }}">
+                    <a href="{{ url('tags/manage') }}" class="menu-link">
+                        <div><?= get_label('tags', 'Tags') ?></div>
+                    </a>
+                </li>
+                @endif
+            </ul>
+        </li>
+      
+
+        {{-- @if ($user->can('manage_tasks'))
+        <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ url(getUserPreferences('tasks', 'default_view')) }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-task text-primary"></i>
+                <div><?= get_label('tasks', 'Tasks') ?></div>
+            </a>
+        </li>
+        @endif
         <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
             <a href="{{ route('policies.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-task text-primary"></i>
                 <div><?= get_label('Policies', 'Policies') ?></div>
             </a>
         </li>
+
+        @if ($user->can('manage_statuses'))
+        <li class="menu-item {{ Request::is('status/manage') ? 'active' : '' }}">
+            <a href="{{ url('status/manage') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-grid-small text-secondary'></i>
+                <div><?= get_label('statuses', 'Statuses') ?></div>
+            </a>
+        </li>
+        @endif
+        @if ($user->can('manage_priorities'))
+        <li class="menu-item {{ Request::is('priority/manage') ? 'active' : '' }}">
+            <a href="{{ url('priority/manage') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-up-arrow-alt text-success'></i>
+                <div><?= get_label('priorities', 'Priorities') ?></div>
+            </a>
+        </li>
+        @endif
+        @if ($user->can('manage_workspaces'))
+        <li class="menu-item {{ Request::is('workspaces') || Request::is('workspaces/*') ? 'active' : '' }}">
+            <a href="{{ url('workspaces') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bx-check-square text-danger'></i>
+                <div><?= get_label('workspaces', 'Workspaces') ?></div>
+            </a>
+        </li>
+        @endif --}}
+<!-- grid -->
+
+
+        <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ route('policies.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-task text-primary"></i>
+                <div><?= get_label('Policies', 'Policies') ?></div>
+            </a>
+        </li>
+        <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ route('upload.form') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file-blank text-primary"></i>
+                <div><?= get_label('Policies', 'Upload Documents') ?></div>
+            </a>
+        </li>
+        @if(getAuthenticatedUser()->hasRole('client'))
+        <li class="menu-item {{ Request::is('agent/documents') || Request::is('tasks/*') ? 'active' : '' }}">
+            <a href="{{ route('agent.documents') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file-blank text-primary"></i>
+                <div><?= get_label('Policies', 'Documents') ?></div>
+            </a>
+        </li>
+        @endif
         @if (Auth::guard('web')->check())
         <li class="menu-item {{ Request::is('chat') || Request::is('chat/*') ? 'active' : '' }}">
             <a href="{{ url('chat') }}" class="menu-link">
