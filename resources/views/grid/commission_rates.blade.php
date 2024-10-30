@@ -47,12 +47,13 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="3" class="table-subheader">All Broker - Above 5 Lakhs for CV and Above 3 Lac for PVT & TW</th>
+                    <th colspan="4" class="table-subheader">All Broker - Above 5 Lakhs for CV and Above 3 Lac for PVT & TW</th>
                     @foreach ($colheaders['vehicle_categories'] as $category => $subcategories)
                         <th colspan="{{ count($subcategories) }}" class="table-subheader">{{ $category }}</th>
                     @endforeach
                 </tr>
                 <tr>
+                    <th>SR No</th>
                     <th class="table-subheader">Region</th>
                     <th class="table-subheader">State Name</th>
                     <th class="table-subheader">Circle</th>
@@ -64,8 +65,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($commissionRates as $state)
+                @dd($commissionRates);
+                @foreach ($commissionRates as $key => $state)
+
                     <tr>
+                        <td>{{ $key + 1 }}</td>
                         <td>{{ $state['region_name'] }}</td>
                         <td>{{ $state['state_name'] }}</td>
                         <td>{{ $state['Circle'] ?? '' }}</td>

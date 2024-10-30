@@ -9,7 +9,7 @@ class VehicleCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'company_name']; // Added 'company_name' to fillable fields
 
     public function insuranceRates()
     {

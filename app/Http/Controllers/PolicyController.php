@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Exports\PolicyExport;
 use App\Exports\InvalidPolicyExport;
 use Carbon\Carbon;
+use App\Models\VehicleCategory;
 
 class PolicyController extends Controller
 {
@@ -395,6 +396,17 @@ public function showInvalidPolicies()
 
     return view('policies.invalid', compact('invalidPolicies'));
 }
+
+// featch products by company
+public function getProductsByCompany(Request $request)
+{
+    // dd($request->all());
+    $companyName = $request->query('company');
+    $products = VehicleCategory::where('company_name', $companyName)->get(['id', 'name']); // Adjust fields as necessary
+    return response()->json($products);
+}
+
+
 
 
 

@@ -30,12 +30,22 @@ $user = getAuthenticatedUser();
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                {{-- @dd($gridUploadLog); --}}
                 @foreach($gridUploadLog as $log)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->upload_id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $log->company_name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $log->client->first_name ?? "" }}{{ $log->client->last_name ?? ""}}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $log->comany_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($log->agent_id)
+                        @php
+                        $agentIds = explode(',', $log->agent_id); // Convert string to array
+                        $clients = App\Models\Client::whereIn('id', $agentIds)->get(); // Fetch clients based on IDs
+                        @endphp
+                        @foreach($clients as $client)
+                            {{ $client->first_name }} {{ $client->last_name }}@if(!$loop->last)<br> @endif
+                        @endforeach
+                        @endif
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->created_month }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{{ route('commission.rates', $log->upload_id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
@@ -73,12 +83,34 @@ $user = getAuthenticatedUser();
                         
                         <div class="mb-4">
                             <p class="text-sm text-danger">Adding grid for admin. No client selection required.</p>
-                            <!-- <label for="client" class="block text-sm font-medium text-gray-700 mb-2">Select Client</label> -->
-                            <select id="client" name="client_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option value="">Select a client</option>
+                            <label for="client" class="block text-sm font-medium text-gray-700 mb-2">Select Clients</label>
+                            <select id="client" name="client_id[]" multiple class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                {{-- <option value="">Select clients</option> --}}
                                 @foreach($clients as $client)
                                     <option value="{{ $client->id }}">{{ $client->first_name }} {{$client->last_name}}</option>
                                 @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Select Company</label>
+                            <select id="company" name="company" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" required>
+                                <option value="">Select a company</option>
+                                <option value="SBI">SBI</option>
+                                <option value="SHRIRAM">SHRIRAM</option>
+                                <option value="TATA">TATA</option>
+                                <option value="MAGMA">MAGMA</option>
+                                <option value="ICICI">ICICI</option>
+                                <option value="DIGIT">DIGIT</option>
+                                <option value="ROYAL">ROYAL</option>
+                                <option value="RAHEJA QBE">RAHEJA QBE</option>
+                                <option value="LIBERTY">LIBERTY</option>
+                                <option value="BAJAJ">BAJAJ</option>
+                                <option value="CHOLA">CHOLA</option>
+                                <option value="HDFC ERGO">HDFC ERGO</option>
+                                <option value="UNITED INDIA">UNITED INDIA</option>
+                                <option value="RELIANCE">RELIANCE</option>
+                                <option value="TW_OTC">TW_OTC</option>
                             </select>
                         </div>
 

@@ -50,11 +50,30 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="company" class="form-label">Company</label>
-                            <input type="text" class="form-control" id="company" name="company">
+                            <select class="form-select" id="company" name="company" required onchange="fetchProducts()">
+                                <option value="">Select a company</option>
+                                <option value="SBI">SBI</option>
+                                <option value="SHRIRAM">SHRIRAM</option>
+                                <option value="TATA">TATA</option>
+                                <option value="MAGMA">MAGMA</option>
+                                <option value="ICICI">ICICI</option>
+                                <option value="DIGIT">DIGIT</option>
+                                <option value="ROYAL">ROYAL</option>
+                                <option value="RAHEJA QBE">RAHEJA QBE</option>
+                                <option value="LIBERTY">LIBERTY</option>
+                                <option value="BAJAJ">BAJAJ</option>
+                                <option value="CHOLA">CHOLA</option>
+                                <option value="HDFC ERGO">HDFC ERGO</option>
+                                <option value="UNITED INDIA">UNITED INDIA</option>
+                                <option value="RELIANCE">RELIANCE</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="product" class="form-label">Product</label>
-                            <input type="text" class="form-control" id="product" name="product">
+                            <select class="form-select" id="product" name="product">
+                                <option value="">Select a product</option>
+                                <!-- Options will be populated here based on selected company -->
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="mfg_year" class="form-label">Manufacturing Year</label>
@@ -188,4 +207,28 @@
         </div>
     </div>
 </div>
+
+<script>
+function fetchProducts() {
+    var companyId = document.getElementById('company').value;
+    var productSelect = document.getElementById('product');
+    
+    // Clear previous options
+    productSelect.innerHTML = '<option value="">Select a product</option>';
+    
+    if (companyId) {
+        fetch(`{{ route('policies.getProductsByCompany') }}?company=${companyId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(product => {
+                    var option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = product.name; // Adjust based on your product structure
+                    productSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    }
+}
+</script>
 @endsection

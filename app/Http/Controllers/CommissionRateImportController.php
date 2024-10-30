@@ -212,7 +212,27 @@ public function showCommissionRates($uploadId)
     $colheaders = [
         'vehicle_categories' => [], // This will hold vehicle categories with their sections
     ];
-
+    // $commissionRates = State::with(['region', 'commissionRates.vehicleCategory', 'commissionRates.section'])
+    //     ->whereHas('commissionRates', function($query) use ($uploadId) {
+    //         $query->where('upload_id', $uploadId); // Filter by upload_id
+    //     })->get()->map(function ($state) {
+    //         return [
+    //             'state_name' => $state->name,
+    //             'region_name' => $state->region ? $state->region->name : null,
+    //             'commission_rates' => $state->commissionRates->groupBy(function($rate) {
+    //                 return $rate->vehicle_category_id . '-' . $rate->value; // Group by vehicle_category_id and value
+    //             })->map(function ($rates) {
+    //                 return $rates->map(function ($rate) {
+    //                     return [
+    //                         'vehicle_category' => $rate->vehicleCategory->name,
+    //                         'section' => $rate->section ? $rate->section->name : null,
+    //                         'value' => $rate->value,
+    //                         'commission_rate_id' => $rate->id // Include commission rate ID
+    //                     ];
+    //                 });
+    //             })->values() // Flatten the grouped results
+    //         ];
+    //     });
     $commissionRates = State::with(['region', 'commissionRates.vehicleCategory', 'commissionRates.section'])
         ->whereHas('commissionRates', function($query) use ($uploadId) {
             $query->where('upload_id', $uploadId); // Filter by upload_id
@@ -228,7 +248,7 @@ public function showCommissionRates($uploadId)
             $circle = $rates->first()->circle;
             return [
                 'state_name' => $state->name,
-                'region_name' => $state->region->name,
+                'region_name' =>$state->region ? $state->region->name : null,
                 'Circle' => $circle ? $circle->name : null,
                 'vehicle_categories' => $rates->groupBy('vehicle_category_id')
                     ->map(function ($rates, $vehicleCategoryId) use (&$colheaders) {
@@ -258,6 +278,7 @@ public function showCommissionRates($uploadId)
                     })->values()
             ];
         })->filter(); // Remove null entries
+        // dd($commissionRates);
 
     // Prepare the colheaders structure with vehicle categories and sections
     foreach ($commissionRates as $stateData) {

@@ -56,6 +56,7 @@ use App\Exports\UsersExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\PolicyDocumentController;
 use App\Http\Controllers\CommissionRateImportController;
+use App\Http\Controllers\GridstoreController;
 use Illuminate\Http\Request;
 
 /*
@@ -738,7 +739,11 @@ Route::middleware(['CheckInstallation'])->group(function () {
         Route::delete('/{policy}', [PolicyController::class, 'destroy'])->name('policies.destroy');
         
         // Display a listing of the policies
-        Route::get('/', [PolicyController::class, 'index'])->name('policies.index');  
+        Route::get('/', [PolicyController::class, 'index'])->name('policies.index');
+        
+        // get company basis vehicle types
+
+
     });
     Route::prefix('claims')->group(function () {
         // Display a listing of the claims
@@ -776,7 +781,8 @@ Route::get('/upload-policy-documents', [PolicyDocumentController::class, 'showUp
 Route::post('/upload-policy-documents', [PolicyDocumentController::class, 'upload'])->name('upload.policy.documents');
 // routes/web.php
 Route::delete('/documents/{id}', [PolicyDocumentController::class, 'destroy'])->name('documents.destroy');
-Route::post('/import-commission-rates', [CommissionRateImportController::class, 'import'])->name('import.commissionRates');
+Route::post('/import-commission-rates', [GridstoreController::class, 'import'])->name('import.commissionRates');
+// Route::post('/import-commission-rates', [CommissionRateImportController::class, 'import'])->name('import.commissionRates');
 Route::get('/commission-rates/{uploadId}', [CommissionRateImportController::class, 'showCommissionRates'])->name('commission.rates');
 
 
@@ -788,6 +794,7 @@ Route::post('/update-commission-rates', [CommissionRateImportController::class, 
 // agent routes
 
 Route::get('/agent/documents', [PolicyDocumentController::class, 'agentdocuments'])->name('agent.documents');
+Route::get('/products', [PolicyController::class, 'getProductsByCompany'])->name('policies.getProductsByCompany');
 
 // agent routes
 
