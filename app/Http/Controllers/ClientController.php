@@ -27,6 +27,7 @@ use Illuminate\Validation\ValidationException;
 use App\Rules\UniqueEmailPassword;
 use App\Models\Policy;
 use App\Models\PolicyDocument;
+use App\Models\GridGroup;
 
 class ClientController extends Controller
 {
@@ -49,7 +50,8 @@ class ClientController extends Controller
      */
     public function create()
     {
-        return view('clients.create_client');
+        $grid_groups = GridGroup::all();
+        return view('clients.create_client')->with(['grid_groups' => $grid_groups]);
     }
 
     /**
@@ -186,7 +188,7 @@ class ClientController extends Controller
                 $formFields['email_verified_at'] = now()->tz(config('app.timezone'));
             }
             $formFields['status'] = $status;
-
+$formFields['grid_group']=$request->input('grid_group');
             // $dob = $request->input('dob');
             // $doj = $request->input('doj');
             // if ($dob) {
@@ -278,7 +280,8 @@ class ClientController extends Controller
     public function edit($id)
     {
         $client = Client::findOrFail($id);
-        return view('clients.update_client')->with('client', $client);
+        $grid_groups = GridGroup::all();
+        return view('clients.update_client')->with(['client' => $client, 'grid_groups' => $grid_groups]);
     }
 
     /**
@@ -376,7 +379,7 @@ class ClientController extends Controller
             if ($internal_purpose && $request->has('password') && !empty($request->input('password'))) {
                 $request->merge(['password' => NULL]);
             }
-
+$client->grid_group=$request->input('grid_group');
             // Generate a unique client_id if it is null
             if (is_null($client->client_id)) {
                 do {
@@ -448,6 +451,7 @@ class ClientController extends Controller
             // if ($doj) {
             //     $formFields['doj'] = format_date($doj, false, app('php_date_format'), 'Y-m-d');
             // }
+           
 
             $client->update($formFields);
 
@@ -692,7 +696,7 @@ class ClientController extends Controller
                 $policiesCount = Policy::where('agent_name', $client->id)->count();
 
                 return [
-                    'id' => $client->id,
+                    'id' => $client->client_id,
                     'first_name' => $client->first_name,
                     'last_name' => $client->last_name,
                     'company' => $client->company,

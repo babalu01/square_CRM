@@ -122,6 +122,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="grid_group" class="form-label"><?= get_label('grid_group', 'Grid Group') ?></label>
+                        <select class="form-select" id="grid_group" name="grid_group">
+                            <option value="" disabled selected><?= get_label('select_grid_group', 'Select Grid Group') ?></option>
+                            @foreach($grid_groups as $group)
+                                <option value="{{ $group->id }}" {{ $client->grid_group == $group->id ? 'selected' : '' }}>{{ $group->group_name }} {{$group->value}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @if(isAdminOrHasAllDataAccess())
                     <div class="mb-3 col-md-6 {{$client->internal_purpose==1?'d-none':''}}" id="statusDiv">
                         <label class="form-label" for=""><?= get_label('status', 'Status') ?> (<small class="text-muted mt-2"><?= get_label('deactivated_client_login_restricted', 'If Deactivated, the Client Won\'t Be Able to Log In to Their Account') ?></small>)</label>

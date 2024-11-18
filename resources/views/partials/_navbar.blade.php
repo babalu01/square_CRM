@@ -54,6 +54,15 @@ if ($remainingUnreadNotificationsCount < 0) {
                             @if ($unreadNotificationsCount > 0)
                             @foreach ($unreadNotifications as $notification)
                             <li>
+                                @if($notification->type == 'Policyexpired')
+                                <a class="dropdown-item update-notification-status" data-id="{{$notification->id}}" href="{{route('policies.show', $notification->type_id)}}">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-auto fw-semibold"> {{ $notification->title }} <small class="text-muted mx-2">{{ $notification->created_at->diffForHumans() }}</small></div>
+                                        <i class="bx bx-bell me-2"></i>
+                                    </div>
+                                    <div class="mt-2">{{ strlen($notification->message) > 50 ? substr($notification->message, 0, 50) . '...' : $notification->message }}</div>
+                                </a>
+                                @else
                                 <a class="dropdown-item update-notification-status" data-id="{{$notification->id}}" href="javascript:void(0);">
                                     <div class="d-flex align-items-center">
                                         <div class="me-auto fw-semibold">{{ $notification->title }} <small class="text-muted mx-2">{{ $notification->created_at->diffForHumans() }}</small></div>
@@ -61,6 +70,7 @@ if ($remainingUnreadNotificationsCount < 0) {
                                     </div>
                                     <div class="mt-2">{{ strlen($notification->message) > 50 ? substr($notification->message, 0, 50) . '...' : $notification->message }}</div>
                                 </a>
+                                @endif
                             </li>
                             <li>
                                 <div class="dropdown-divider"></div>

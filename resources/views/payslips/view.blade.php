@@ -1,195 +1,241 @@
-@extends('layout') <!-- Assuming you have a layout file -->
-@section('title')
-<?= get_label('payslip', 'Payslip') ?>
-@endsection
-@section('content')
-<div class="container-fluid">
-    <div class="d-flex justify-content-between m-4" id="section-not-to-print">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb breadcrumb-style1">
-                    <li class="breadcrumb-item">
-                        <a href="{{url('home')}}"><?= get_label('home', 'Home') ?></a>
-                    </li>
-                    <li class="breadcrumb-item active">
-                        <a href="{{ url('payslips') }}"><?= get_label('payslips', 'Payslips') ?></a>
-                    </li>
-                    <li class="breadcrumb-item active">
-                        <?= get_label('view', 'View') ?>
-                    </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-    <!-- Display Payslip Information -->
-    <div class="card">
-        <div class="card-body">
-            <div id='section-to-print'>
-                <div class="row mb-4">
-                    <div class="col-md-2 text-start">
-                        <p><?= get_label('payslip_id_prefix', 'PSL-') . $payslip->id ?></p>
-                    </div>
-                    <div class="col-md-5 text-end">
-                        <img src="{{asset($general_settings['full_logo'])}}" alt="" width="200px" />
-                    </div>
-                    <div class="col-md-5 text-end">
-                        <p>
-                            <?php
-                            $timezone = config('app.timezone');
-                            $currentTime = now()->tz($timezone);
-                            echo '<span class="text-muted">' . $currentTime->format($php_date_format . ' H:i:s') . '</span>';
-                            ?>
-                        </p>
-                    </div>
-                </div>
-                <!-- Display Payslip Details -->
-                <div class="row mt-4">
-                    <h5 class="card-title text-center mb-4"><?= get_label('payslip_for', 'Payslip for') ?> {{ $payslip->user_name }} <span class="text-muted">({{ $payslip->user_email }})</span></h5>
-                    <div class="col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <strong><?= get_label('payslip_month', 'Payslip month') ?>:</strong> {{ $payslip->month->format('F, Y') }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('basic_salary', 'Basic salary') ?>:</strong> {{ format_currency($payslip->basic_salary) }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('working_days', 'Working days') ?>:</strong> {{ $payslip->working_days }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('lop_days', 'Loss of pay days') ?>:</strong> {{ $payslip->lop_days }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('paid_days', 'Paid days') ?>:</strong> {{ $payslip->paid_days }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('leave_deduction', 'Leave deduction') ?>:</strong> {{ format_currency($payslip->leave_deduction) }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('bonus', 'Bonus') ?>:</strong> {{ format_currency($payslip->bonus) }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <strong><?= get_label('incentives', 'Incentives') ?>:</strong> {{ format_currency($payslip->incentives) }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('over_time_hours', 'Over time hours') ?>:</strong> {{ $payslip->ot_hours }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('over_time_rate', 'Over time rate') ?>:</strong>  {{ format_currency($payslip->ot_rate) }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('over_time_payment', 'Over time payment') ?>:</strong> {{ format_currency($payslip->ot_payment) }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('payment_method', 'Payment method') ?>:</strong> {{ $payslip->payment_method }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('payment_date', 'Payment date') ?>:</strong> {{ $payslip->payment_date }}
-                            </li>
-                            <li class="list-group-item">
-                                <strong><?= get_label('payment_status', 'Payment status') ?>:</strong> <?= $payslip->status ?>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- Display Allowances -->
-                <div class="row mt-4 mx-1">
-                    <div class="col-md-12">
-                        <h5><?= get_label('allowances', 'Allowances') ?></h5>
-                        @if(count($payslip->allowances) > 0)
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th><?= get_label('allowance', 'Allowance') ?></th>
-                                    <th>Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($payslip->allowances as $allowance)
-                                <tr>
-                                    <td>{{ $allowance->title }}</td>
-                                    <td> {{ format_currency($allowance->amount) }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @else
-                        <p><?= get_label('no_allowances_found_payslip', 'No allowances found for this payslip.') ?></p>
-                        @endif
-                        <!-- Display Deductions -->
-                        <h5 class="mt-4 mx-1"><?= get_label('deductions', 'Deductions') ?></h5>
-                        @if(count($payslip->deductions) > 0)
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th><?= get_label('deduction', 'Deduction') ?></th>
-                                    <th><?= get_label('type', 'Type') ?></th>
-                                    <th><?= get_label('amount', 'Amount') ?></th>
-                                    <th><?= get_label('percentage', 'Percentage') ?> (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($payslip->deductions as $deduction)
-                                <tr>
-                                    <td>{{ $deduction->title }}</td>
-                                    <td>{{ $deduction->type == 'amount' ? get_label('amount', 'Amount') : get_label('percentage', 'Percentage') }}</td>
-                                    <td> {{ format_currency($deduction->amount) }}</td>
-                                    <td>{{ $deduction->type == 'percentage' ? $deduction->percentage : '-' }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @else
-                        <p><?= get_label('no_deductions_found_payslip', 'No deductions found for this payslip.') ?></p>
-                        @endif
-                        <h5 class="mt-4 mx-1"><?= get_label('total_allowances_and_deductions', 'Total allowances and deductions') ?></h5>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th scope="row"><?= get_label('total_allowances', 'Total allowances') ?></th>
-                                    <td>{{ format_currency($payslip->total_allowance) }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><?= get_label('total_deductions', 'Total deductions') ?></th>
-                                    <td>{{ format_currency($payslip->total_deductions) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- Net Payable -->
-                        <div class="text-end mt-4">
-                            <h5 class="d-none"><?= get_label('total_earnings', 'Total earnings') ?> : {{ format_currency($payslip->total_earnings) }}</h5>
-                            <h5><?= get_label('net_payable', 'Net payable') ?> : {{ format_currency($payslip->net_pay) }}</h5>
-                        </div>
-                        <!-- Note -->
-                        @if ($payslip->note)
-                        <h5><?= get_label('note', 'Note') ?></h5>
-                        <p>{{ $payslip->note ?: '-' }}</p>
-                        @endif
-                    </div>
-                </div>
-                <div class="row mt-5">
-                    <div class="col-md-6 text-start">
-                        <span class="text-muted">
-                            <strong><?= get_label('created_at', 'Created at') ?>:</strong>
-                            {{ format_date($payslip->created_at,true) }}
-                        </span>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <span class="text-muted">
-                            <strong><?= get_label('last_updated_at', 'Last updated at') ?>:</strong>
-                            {{ format_date($payslip->updated_at,true) }}
-                        </span>
-                    </div>
-                </div>
+{{-- custom view --}}
+<html>
+<head>
+  <style>
+    /* Reset and base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      background-color: whitesmoke;
+    }
+
+    /* Container styles */
+    .container {
+      border: 1px dashed #000;
+      padding: 20px;
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: white;
+    }
+
+    /* Header section */
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .text-end {
+      text-align: right;
+      flex: 1;
+    }
+
+    .text-start {
+      text-align: left;
+      flex: 2;
+      padding-left: 20px;
+    }
+
+    /* Table styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    td, th {
+      border: 1px solid #000;
+      padding: 8px;
+    }
+
+    th {
+      text-align: left;
+      background-color: #f5f5f5;
+    }
+
+    /* Utility classes */
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 20px;
+    }
+
+    /* Print button */
+    .print-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .print-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Print styles */
+    @media print {
+      .print-btn {
+        display: none;
+      }
+      
+      .container {
+        border: none;
+      }
+    }
+
+    /* Custom styles to replace Bootstrap */
+    .flex {
+      display: flex;
+    }
+
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .flex-2 {
+      flex: 2;
+    }
+
+    .min-width-200 {
+      min-width: 200px;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-left {
+      text-align: left;
+      padding-left: 20px;
+    }
+
+    .total {
+      font-weight: bold;
+    }
+   
+  </style>
+</head>
+<body>
+ 
+    <div class="container">
+             <a href="#" onclick="window.print()">Print </a>
+          <div class="header flex">
+            <div class="flex-1 text-right">
+                <img alt="Company Logo" height="200" src="{{ url('storage/logos/logo.png') }}" width="200" />
+            </div>
+            <div class="flex-2 text-left companytitle">
+                <h1>{{($general_settings['company_title'])}}</h1>
+                <h4>
+                    123, Sunshine Apartments,
+                    Near Bandra Station,
+                    Bandra West, Mumbai - 400050,
+                    Maharashtra, India.
+                </h4>
+                <h3>
+                 Pay Slip for {{ $payslip->month->format('F, Y') }}
+                </h3>
             </div>
         </div>
-    </div>
-    <div class="col-md-12 text-center mt-4" id="section-not-to-print">
-        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="<?= get_label('print_payslip', 'Print payslip') ?>" onclick="window.print()"><i class='bx bx-printer'></i></button>
-    </div>
-</div>
-@endsection
+        <br>
+   <hr>
+   <div class="employee-info flex flex-wrap">
+       <div class="flex-1 min-width-200">
+           <strong>Employee ID:</strong> {{$payslip->user_id}}<br>
+           <strong>Employee Name:</strong> {{$payslip->user_name}}<br>
+           <strong>Designation:</strong>{{ $payslip->user->role->name ?? ""}}<br>
+           <strong>Department:</strong> TEST<br>
+       </div>
+       <div class="flex-1 min-width-200">
+           <strong>PF No.:</strong> 88585458<br>
+           <strong>ESI No.:</strong> 450450450<br>
+           <strong>Payment Status:</strong> {!!$payslip->status!!}<br>
+       </div>
+   </div><br>
+   <hr>
+   <br>
+   <table class="details">
+    <tr>
+     <td>Gross Wages</td>
+     <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->net_pay) }}</td>
+     <td>Total Working Days</td>
+     <td>{{ $payslip->working_days }}</td>
+     <td>Leaves</td>
+     <td>{{ $payslip->lop_days }}</td>
+    </tr>
+    <tr>
+     <td>LOP Days</td>
+     <td>{{ $payslip->lop_days }}</td>
+     <td>Paid Days</td>
+     <td>{{ $payslip->paid_days }}</td>
+     <td>Basic Salary</td>
+     <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{ ($payslip->basic_salary) }}</td>
+    </tr>
+   </table>
+   <table class="earnings">
+    <thead>
+     <tr>
+      <th>Earnings</th>
+      <th></th>
+      <th>Deductions</th>
+      <th></th>
+     </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Basic</td>
+            <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->basic_salary -$payslip->leave_deduction) }}</td>
+            <td></td>
+            <td></td>
+        </tr>
+         @foreach($payslip->allowances as $index => $allowance)
+            <tr>
+                <td>{{ $allowance->title }}</td>
+                <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($allowance->amount) }}</td>
+                @if ($index < count($payslip->deductions)) <!-- Check if deduction exists -->
+                    <td>{{$payslip->deductions[$index]->title}}</td>
+                    <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->deductions[$index]->amount) }}</td>
+                @else
+                    <td></td>
+                    <td></td>
+                @endif
+            </tr>
+        @endforeach
+
+        @for ($i = count($payslip->allowances); $i < count($payslip->deductions); $i++)
+            <tr>
+                <td></td>
+                <td></td>
+                <td>{{$payslip->deductions[$i]->title}}</td>
+                <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->deductions[$i]->amount) }}</td>
+            </tr>
+        @endfor
+        <tr class="total">
+            <td>Total Earnings</td>
+            <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->allowances->sum('amount') + $payslip->basic_salary -$payslip->leave_deduction) }}</td>
+            <td>Total Deductions</td>
+            <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->deductions->sum('amount')) }}</td>
+        </tr>
+    </tbody>
+   </table>
+   <div class="net-salary">
+   <strong> Net Salary: <span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span>{{ ($payslip->net_pay) }}</strong>
+   </div>
+  </div>
+</body>
+</html>
+{{-- custom view --}}

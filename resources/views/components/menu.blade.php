@@ -215,7 +215,7 @@ $pendingLeaveRequestsCount = $query->count();
                         <div><?= get_label('Grid Logs', 'Grid Logs') ?></div>
                     </a>
                 </li>
-                <li class="menu-item {{ Request::is('projects/favorite') || Request::is('projects/list/favorite') ? 'active' : '' }}">
+                {{-- <li class="menu-item {{ Request::is('projects/favorite') || Request::is('projects/list/favorite') ? 'active' : '' }}">
                     <a href="{{ url(getUserPreferences('projects', 'default_view') . '/favorite') }}" class="menu-link">
                         <div><?= get_label('favorite_projects', 'Favorite projects') ?></div>
                     </a>
@@ -227,7 +227,7 @@ $pendingLeaveRequestsCount = $query->count();
                         <div><?= get_label('tags', 'Tags') ?></div>
                     </a>
                 </li>
-                @endif
+                @endif --}}
             </ul>
         </li>
       
@@ -280,12 +280,21 @@ $pendingLeaveRequestsCount = $query->count();
                 <div><?= get_label('Policies', 'Policies') ?></div>
             </a>
         </li>
+        @if ($user->can('create_documents'))
         <li class="menu-item {{ Request::is('tasks') || Request::is('tasks/*') ? 'active' : '' }}">
             <a href="{{ route('upload.form') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file-blank text-primary"></i>
+                <i class="menu-icon tf-icons bx bx-upload text-primary"></i>
                 <div><?= get_label('Policies', 'Upload Documents') ?></div>
             </a>
         </li>
+        <li class="menu-item {{ Request::is('pending') ? 'active' : '' }}">
+            <a href="{{ route('pending.policies.documents') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file-blank text-danger"></i>
+                <div><?= get_label('Policies', 'Pending Documents') ?></div>
+            </a>
+            </li>
+
+        @endif
         @if(getAuthenticatedUser()->hasRole('client'))
         <li class="menu-item {{ Request::is('agent/documents') || Request::is('tasks/*') ? 'active' : '' }}">
             <a href="{{ route('agent.documents') }}" class="menu-link">
@@ -336,6 +345,14 @@ $pendingLeaveRequestsCount = $query->count();
             </a>
         </li>
         @endif
+        @if(! getAuthenticatedUser()->hasRole('client'))
+        <li class="menu-item {{ Request::is('attendance') ? 'active' : '' }}">
+            <a href="{{ route('attendance.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar text-primary"></i>
+                <div><?= get_label('Attendence', 'Attendance') ?></div>
+            </a>
+        </li>
+        @endif
         @if ($user->can('manage_clients'))
         <li class="menu-item {{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
             <a href="{{ url('clients') }}" class="menu-link">
@@ -376,6 +393,7 @@ $pendingLeaveRequestsCount = $query->count();
                 <?= get_label('payslips', 'Payslips') ?>
             </a>
             <ul class="menu-sub">
+               
                 @if ($user->can('manage_payslips'))
                 <li class="menu-item {{ Request::is('payslips') || Request::is('payslips/*') ? 'active' : '' }}">
                     <a href="{{ url('payslips') }}" class="menu-link">

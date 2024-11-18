@@ -54,6 +54,8 @@ return [
         'Contract_types' =>  array('create_contract_types', 'manage_contract_types', 'edit_contract_types', 'delete_contract_types'),
         'Timesheet' =>  array('create_timesheet', 'manage_timesheet', 'delete_timesheet'),
         'Media' =>  array('create_media', 'manage_media', 'delete_media'),
+        'Attendence' =>  array('create_attendance', 'manage_attendance', 'edit_attendance', 'delete_attendance'),
+
         'Payslips' =>  array('create_payslips', 'manage_payslips', 'edit_payslips', 'delete_payslips'),
         'Allowances' =>  array('create_allowances', 'manage_allowances', 'edit_allowances', 'delete_allowances'),
         'Deductions' =>  array('create_deductions', 'manage_deductions', 'edit_deductions', 'delete_deductions'),
@@ -69,6 +71,7 @@ return [
         'Milestones' =>  array('create_milestones', 'manage_milestones', 'edit_milestones', 'delete_milestones'),
         'System Notifications' =>  array('manage_system_notifications', 'delete_system_notifications'),
         'policies' =>  array('create_policies', 'Manage_policies', 'edit_policies', 'delete_policies'),
+        'documents' =>  array('create_documents', 'Manage_documents', 'edit_documents', 'delete_documents'),
         'grid' =>  array('create_grid', 'Manage_grid', 'edit_grid', 'delete_grid'),
 
     ]

@@ -11,6 +11,9 @@ use App\Services\DeletionService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Barryvdh\DomPDF\Facade\Pdf;  // <-- Ensure this is at the top of your controller
 
 class PayslipsController extends Controller
 {
@@ -360,6 +363,16 @@ class PayslipsController extends Controller
         $payslip->payment_date = $payment_date;
         $payslip->status = $payslip->status == 1 ? '<span class="badge bg-success">' . get_label('paid', 'Paid') . '</span>' : '<span class="badge bg-danger">' . get_label('unpaid', 'Unpaid') . '</span>';
         return view('payslips.view', compact('payslip'));
+
+        // for show in pdf format in browser
+        // $dompdf = new Dompdf();
+        // $dompdf->setBasePath(public_path()); // Set the base path to the public directory
+        // $dompdf->loadHtml(view('payslips.view', compact('payslip'))->render());
+        // $dompdf->setPaper('A4', 'portrait');
+        // $dompdf->render();
+
+        // // Display the PDF in the browser
+        // return $dompdf->stream('payslip_'.$id.'.pdf', array('Attachment' => 0));
     }
 
 
@@ -411,4 +424,81 @@ class PayslipsController extends Controller
         }
         return response()->json(['error' => false, 'message' => 'Payslip duplicated successfully.', 'id' => $id]);
     }
+
+    public function downloadPDF($id)
+    {
+        $payslip = Payslip::select(
+            'payslips.*',
+            DB::raw('CONCAT(users.first_name, " ", users.last_name) AS user_name'),
+            'users.email as user_email',
+            'payment_methods.title as payment_method'
+        )->where('payslips.id', '=', $id)
+            ->leftJoin('users', 'payslips.user_id', '=', 'users.id')
+            ->leftJoin('payment_methods', 'payslips.payment_method_id', '=', 'payment_methods.id')->first();
+    
+        $creator = User::find(substr($payslip->created_by, 2)); // Remove the 'u_' prefix
+        if ($creator !== null) {
+            $payslip->creator = $creator->first_name . ' ' . $creator->last_name;
+        } else {
+            $payslip->creator = ' -';
+        }
+        $payslip->month = Carbon::parse($payslip->month);
+        $payment_date = $payslip->payment_date !== null ? Carbon::parse($payslip->payment_date) : '';
+        $payment_date = $payment_date != '' ? format_date($payment_date) : '-';
+        $payslip->payment_date = $payment_date;
+        $payslip->status = $payslip->status == 1 ? '<span class="badge bg-success">' . get_label('paid', 'Paid') . '</span>' : '<span class="badge bg-danger">' . get_label('unpaid', 'Unpaid') . '</span>';
+    
+        // Generate PDF using Dompdf
+        $dompdf = new Dompdf();
+        $dompdf->setBasePath(public_path());
+        $dompdf->loadHtml(view('payslips.view', compact('payslip'))->render());
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Download the PDF
+        return $dompdf->stream('payslip_'.$id.'.pdf');
+
+    }
+//     public function downloadPDF($id)
+// {
+//     // Fetch the payslip data
+//     $payslip = Payslip::select(
+//         'payslips.*',
+//         DB::raw('CONCAT(users.first_name, " ", users.last_name) AS user_name'),
+//         'users.email as user_email',
+//         'payment_methods.title as payment_method'
+//     )->where('payslips.id', '=', $id)
+//     ->leftJoin('users', 'payslips.user_id', '=', 'users.id')
+//     ->leftJoin('payment_methods', 'payslips.payment_method_id', '=', 'payment_methods.id')
+//     ->first();
+
+//     // Add the creator's name (removes 'u_' prefix from created_by)
+//     $creator = User::find(substr($payslip->created_by, 2)); 
+//     if ($creator !== null) {
+//         $payslip->creator = $creator->first_name . ' ' . $creator->last_name;
+//     } else {
+//         $payslip->creator = ' -';
+//     }
+
+//     // Format the month and payment date
+//     $payslip->month = Carbon::parse($payslip->month);
+//     $payment_date = $payslip->payment_date !== null ? Carbon::parse($payslip->payment_date) : '';
+//     $payslip->payment_date = $payment_date != '' ? format_date($payment_date) : '-';
+
+//     // Add status with a badge
+//     $payslip->status = $payslip->status == 1 
+//         ? '<span class="badge bg-success">' . get_label('paid', 'Paid') . '</span>'
+//         : '<span class="badge bg-danger">' . get_label('unpaid', 'Unpaid') . '</span>';
+
+//     // Generate the HTML content for the PDF
+//     $html = view('payslips.view', compact('payslip'))->render();
+
+//     // Generate the PDF using the PDF facade
+//     $pdf = Pdf::loadHTML($html)
+//         ->setPaper('A4', 'portrait'); // Set paper size and orientation
+
+//     // Stream (download) the PDF
+//     return $pdf->stream('payslip_' . $id . '.pdf');
+// }
+
 }

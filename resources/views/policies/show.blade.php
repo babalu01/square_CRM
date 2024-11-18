@@ -28,8 +28,14 @@
         color: #a0aec0; /* Gray color for icons */
         margin-bottom: 10px; /* Space below the icon */
     }
+
+    /* WhatsApp Icon Style */
+    
 </style>
 
+@php
+    $user = getAuthenticatedUser();
+@endphp
 <div class="bg-gray-100 min-h-screen py-8">
         <div class="p-2 lg:p-6">
             <div class="mx-auto p-2 lg:p-4">
@@ -38,39 +44,58 @@
                         Remaining Time: 
                         <span class="font-bold">{{ $remainingTime }}</span>
                     </p>
+<i class="fab fa-whatsapp whatsapp-icon text-4xl text-green-500 position-fixed bg-body p-2 rounded-circle bottom-0" data-bs-toggle="modal" data-bs-target="#whatsappModal"></i>
+
                 </div>
                 <div class="bg-label-gray grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 border border-gray-300 p-4 rounded-lg">
                     <div>
-                        <p class="text-gray-600">ID:</p>
-                        <p class="text-gray-600">{{ $policy->id }}</p>
+                       
+                        <p class="text-gray-600">Customer Name:</p>
+                        <p class="text-gray-600">{{ $policy->CustomerName }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Partner Name:</p>
+                        <p class="text-gray-600">{{ $policy->Partner_Name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Insurer Name:</p>
+                        <p class="text-gray-600">{{ $policy->Insurer_Name }}</p>
                     </div>
                     <div>
                         <p class="text-gray-600">Policy Number:</p>
-                        <p class="text-gray-600">{{ $policy->policy_number }}</p>
+                        <p class="text-gray-600">{{ $policy->Policy_No }}</p>
                     </div>
                     <div>
-                        <p class="text-gray-600">Type:</p>
-                        <p class="text-gray-600">{{ $policy->type }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Provider:</p>
-                        <p class="text-gray-600">{{ $policy->provider }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Premium Amount:</p>
-                        <p class="text-gray-600">{{ number_format($policy->premium_amount, 2) }}</p>
+                        <p class="text-gray-600">Policy Issue Date:</p>
+                        <p class="text-gray-600">{{ $policy->Policy_Issue_Date }}</p>
                     </div>
                     <div>
                         <p class="text-gray-600">Start Date:</p>
-                        <p class="text-gray-600">{{ $policy->start_date }}</p>
+                        <p class="text-gray-600">{{ $policy->PolicyStartDateTP }}</p>
                     </div>
                     <div>
                         <p class="text-gray-600">End Date:</p>
-                        <p class="text-gray-600">{{ $policy->end_date }}</p>
+                        <p class="text-gray-600">{{ $policy->PolicyEndDateTP }}</p>
                     </div>
                     <div>
                         <p class="text-gray-600">Status:</p>
-                        <p class="text-gray-600">{{ $policy->status }}</p>
+                        <p class="text-gray-600">{{ $policy->STATUS }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Gross Premium:</p>
+                        <p class="text-gray-600">{{ number_format($policy->GrossPrem, 2) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">Net Premium:</p>
+                        <p class="text-gray-600">{{ number_format($policy->NetPrem, 2) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">OD Premium:</p>
+                        <p class="text-gray-600">{{ number_format($policy->OD_Premium, 2) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">TP Premium:</p>
+                        <p class="text-gray-600">{{ number_format($policy->TP_Premium, 2) }}</p>
                     </div>
                     <div>
                         <p class="text-gray-600">Created At:</p>
@@ -79,102 +104,6 @@
                     <div>
                         <p class="text-gray-600">Updated At:</p>
                         <p class="text-gray-600">{{ $policy->updated_at }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Company:</p>
-                        <p class="text-gray-600">{{ $policy->company }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Product:</p>
-                        <p class="text-gray-600">{{ $policy->product }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Manufacturing Year:</p>
-                        <p class="text-gray-600">{{ $policy->mfg_year }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Fuel Type:</p>
-                        <p class="text-gray-600">{{ $policy->fuel_type }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">GVW/CC:</p>
-                        <p class="text-gray-600">{{ $policy->gvw_cc }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Policy Holder Name:</p>
-                        <p class="text-gray-600">{{ $policy->policy_holder_name }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">OD:</p>
-                        <p class="text-gray-600">{{ number_format($policy->od, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Without GST:</p>
-                        <p class="text-gray-600">{{ number_format($policy->without_gst, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Total:</p>
-                        <p class="text-gray-600">{{ number_format($policy->total, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Registration Number:</p>
-                        <p class="text-gray-600">{{ $policy->registration_number }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Policy Type:</p>
-                        <p class="text-gray-600">{{ $policy->policy_type }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Agent Name:</p>
-                        <p class="text-gray-600">{{ $policy->agent_name }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Broker/Direct Code:</p>
-                        <p class="text-gray-600">{{ $policy->broker_direct_code }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Mode of Payment:</p>
-                        <p class="text-gray-600">{{ $policy->mode_of_payment }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Percentage:</p>
-                        <p class="text-gray-600">{{ number_format($policy->percentage, 2) }}%</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Commission:</p>
-                        <p class="text-gray-600">{{ number_format($policy->commission, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">TDS:</p>
-                        <p class="text-gray-600">{{ number_format($policy->tds, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Final Commission:</p>
-                        <p class="text-gray-600">{{ number_format($policy->final_commission, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Discount Percentage:</p>
-                        <p class="text-gray-600">{{ number_format($policy->discount_percentage, 2) }}%</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Discount:</p>
-                        <p class="text-gray-600">{{ number_format($policy->discount, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Payment:</p>
-                        <p class="text-gray-600">{{ number_format($policy->payment, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Cheque No:</p>
-                        <p class="text-gray-600">{{ $policy->cheque_no }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Payment Received:</p>
-                        <p class="text-gray-600">{{ number_format($policy->payment_received, 2) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-600">Profit:</p>
-                        <p class="text-gray-600">{{ number_format($policy->profit, 2) }}</p>
                     </div>
                     <div>
                     <a href="{{ route('policies.edit', $policy->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
@@ -186,23 +115,26 @@
                 Back to Policies
             </a>
                     </div>
+
                  
                 </div>
                 <div class="bg-white shadow-md rounded-lg mt-6 overflow-hidden">
                     <div class="bg-gray-100 px-4 py-3 border-b flex justify-between items-center">
                         <h2 class="text-lg font-semibold text-gray-800">Policy Documents</h2>
+                        @if ($user->can('create_documents'))
                         <button id="uploadDocumentBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded inline-flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                             </svg>
                             Upload Document
                         </button>
+                        @endif
                     </div>
                     <div class="container mx-auto mt-6 mb-4">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Policy Documents</h2>
                         <div class="file-explorer">
-                            @if($policy->documents->count() > 0)
-                                @foreach($policy->documents as $document)
+                            @if($policy->policydocuments->count() > 0)
+                                @foreach($policy->policydocuments as $document)
                                     <div class="file-card">
                                         <div class="file-icon">
                                             @php
@@ -234,9 +166,12 @@
                                             <a href="{{ asset('storage/' . $document->file_path) }}" download class="text-green-600 hover:text-green-800 transition-colors duration-300 text-xs">
                                                 <i class="fas fa-download mr-1"></i>
                                             </a>
+                        @if ($user->can('delete_documents'))
+
                                             <button onclick="openDeleteModal({{ $document->id }})" class="text-red-600 hover:text-red-800 transition-colors duration-300">
                                                 <i class="fas fa-trash-alt mr-2"></i>
                                             </button>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
@@ -263,7 +198,7 @@
                 <div class="mt-2">
                     <form action="{{ route('upload.policy.documents') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
-                        <input type="hidden" name="policy_id" value="{{ $policy->registration_number }}">
+                        <input type="hidden" name="policy_id" value="{{ $policy->Vehicle_No }}">
                         <div class="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-12 cursor-pointer hover:border-blue-500 transition duration-300">
                             <svg class="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -313,6 +248,52 @@
     </div>
 </div>
 
+<!-- WhatsApp Icon -->
+
+<!-- WhatsApp Modal -->
+<div class="modal fade" id="whatsappModal" tabindex="-1" aria-labelledby="whatsappModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="whatsappModalLabel">Send Message via WhatsApp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="whatsappForm">
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number (e.g., 93707090019)</label>
+                        <input type="text" class="form-control" id="phone" required placeholder="Enter phone number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                      
+<textarea class="form-control" id="message" rows="10" required placeholder="Enter your message">
+🚗 Policy Status Update ⏳    
+Dear {{ $policy->policy_holder_name }}, 
+    @if(\Carbon\Carbon::now()->greaterThanOrEqualTo(\Carbon\Carbon::parse($policy->end_date)))
+We regret to inform you that your SBI Auto Insurance Policy (Policy No: {{ $policy->policy_number }}) has expired as of *{{ \Carbon\Carbon::parse($policy->end_date)->format('d-F-Y') }}*. It is important to renew your policy to maintain continuous coverage.
+    @else
+This is a friendly reminder that your SBI Auto Insurance Policy (Policy No: {{ $policy->policy_number }}) will expire on *{{ \Carbon\Carbon::parse($policy->end_date)->format('d-F-Y') }}*. Your policy is currently active, and it’s important to renew it before the expiration to maintain continuous coverage.
+    @endif
+💡Policy Details:
+Type: {{ $policy->type }}
+Registration No: {{ $policy->registration_number }}    
+Please feel free to contact us or your agent, Square Broker, for any assistance with the renewal process.
+Looking forward to helping you stay protected! 🛡️    
+Best regards,
+Naina Insurance
+</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="sendMessageButton">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let documentIdToDelete;
 
@@ -356,5 +337,29 @@
     }
 
     document.getElementById('uploadDocumentBtn').addEventListener('click', openModal);
+
+    document.getElementById('sendMessageButton').addEventListener('click', function () {
+        // Get values from the form
+        var phone = document.getElementById('phone').value;
+        var message = document.getElementById('message').value;
+
+        // Validate inputs
+        if (phone && message) {
+            // URL encode the message
+            var encodedMessage = encodeURIComponent(message);
+
+            // Generate WhatsApp URL
+            var whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}`;
+
+            // Redirect to WhatsApp Web
+            window.open(whatsappUrl, '_blank');
+            
+            // Close the modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('whatsappModal'));
+            modal.hide();
+        } else {
+            alert('Please fill in both phone number and message.');
+        }
+    });
 </script>
 @endsection

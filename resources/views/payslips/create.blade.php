@@ -30,7 +30,7 @@
                 <div class="row">
                     <div class="mb-3 col-md-4">
                         <label class="form-label" for="user_id"><?= get_label('select_user', 'Select user') ?> <span class="asterisk">*</span></label>
-                        <select class="form-select users_select" name="user_id" data-placeholder="<?= get_label('type_to_search', 'Type to search') ?>"  data-allow-clear="false">
+                        <select class="form-select users_select" name="user_id" data-placeholder="<?= get_label('type_to_search', 'Type to search') ?>" data-allow-clear="false">
                         </select>
                     </div>
                     <div class="mb-3 col-md-4">
@@ -228,6 +228,27 @@
     var allowance_count = '0';
     var deduction_count = '0';
     var decimal_points = <?= intval($general_settings['decimal_points_in_currency'] ?? '2') ?>;
+    $('.users_select').on('change', function () {
+        var userId = $(this).val();
+        if (userId) {
+            $.ajax({
+                url: baseUrl + '/attendance/working-days/' + userId,
+                type: 'GET',
+                success: function (data) {
+                    var totalworkingdays = $('#working_days').val() || 0;
+                    var attendeddays = data.working_days;
+                    var lossofpaydays = totalworkingdays - attendeddays;
+                    $('#lop_days').val(lossofpaydays);
+                    calculateLeaveDeduction(); // Recalculate deductions based on new working days
+                },
+                error: function (error) {
+                    console.error('Error fetching working days:', error);
+                }
+            });
+        } else {
+            $('#lop_days').val('');
+        }
+    });
 </script>
 <script src="{{asset('assets/js/pages/payslips.js')}}"></script>
 @endsection

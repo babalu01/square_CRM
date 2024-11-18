@@ -43,9 +43,9 @@ class UpdateExpiredPolicies extends Command
             $notification = new Notification([
                 'workspace_id' => 1,
                 'from_id' => 'u_1',
-                'type' => 'info',
+                'type' => 'Policyexpired',
                 'action' => 'policy_expired',
-                'type_id' => 1,
+                'type_id' => $policy->id,
                 'title' => 'Policy Expired',
                 'message' => $policy->policy_number . ' has been expired',
                 'created_at' => now(),

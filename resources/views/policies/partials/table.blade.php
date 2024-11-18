@@ -7,7 +7,7 @@
                 <th>Policy Holder Name</th>
                 <th>Registration Number</th>
                 <th>Agent Name</th>
-                <th>Type</th>
+                <th>Product</th>
                 <th>Provider</th>
                 <th>Premium Amount</th>
                 <th>Status</th>
@@ -22,16 +22,16 @@
             @foreach($policies as $policy)
                 <tr>
                     <td>{{ $policy->id }}</td>
-                    <td><a href="{{ route('policies.show', $policy->id) }}">{{ $policy->policy_number }}</a></td>
-                    <td>{{ $policy->policy_holder_name }}</td>
-                    <td>{{ $policy->registration_number }}</td>
-                    <td>{{ $policy->client->first_name ?? "N/A" }} {{ $policy->client->last_name ?? "" }}</td>
-                    <td>{{ $policy->type }}</td>
-                    <td>{{ $policy->provider }}</td>
-                    <td>₹{{ number_format($policy->premium_amount, 2) }}</td>
-                    <td>{{ $policy->status }}</td>
-                    <td>{{ $policy->start_date }}</td>
-                    <td>{{ $policy->end_date }}</td>
+                    <td><a href="{{ route('policies.show', $policy->id) }}">{{ $policy->Policy_No }}</a></td>
+                    <td>{{ $policy->CustomerName }}</td>
+                    <td>{{ $policy->Vehicle_No }}</td>
+                    <td>{{ $policy->Partner_Name ?? "N/A" }}</td>
+                    <td>{{ $policy->Product }}</td>
+                    <td>{{ $policy->Insurer_Name }}</td>
+                    <td>₹{{ number_format($policy->NetPrem, 2) }}</td>
+                    <td>{{ $policy->STATUS }}</td>
+                    <td>{{ $policy->PolicyStartDateTP }}</td>
+                    <td>{{ $policy->PolicyEndDateTP }}</td>
                 @if($user->can('edit_policies'))
                     <td>
                    <a href="{{ route('policies.edit', $policy->id) }}"> <i class="bx bx-edit mx-1"></i></a>

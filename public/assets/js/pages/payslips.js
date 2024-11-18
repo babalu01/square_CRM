@@ -47,7 +47,8 @@ function loadingTemplate(message) {
 
 function idFormatter(value, row, index) {
     return [
-        '<a href="' + baseUrl + '/payslips/view/' + row.id + '" target="_blank">' + label_payslip_id_prefix + row.id + '</a>'
+        '<a href="' + baseUrl + '/payslips/view/' + row.id + '" target="_blank">' + label_payslip_id_prefix + row.id + '</a>',
+        '<div class="text-center mt-4"><a href="' + baseUrl + '/payslips/' + row.id + '/download-pdf" class="bx bx-download" title="Download PDF"></a></div>'
     ];
 }
 

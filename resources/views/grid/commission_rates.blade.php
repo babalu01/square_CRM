@@ -65,9 +65,8 @@
                 </tr>
             </thead>
             <tbody>
-                @dd($commissionRates);
                 @foreach ($commissionRates as $key => $state)
-
+                
                     <tr>
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $state['region_name'] }}</td>

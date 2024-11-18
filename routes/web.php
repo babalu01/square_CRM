@@ -58,6 +58,7 @@ use App\Http\Controllers\PolicyDocumentController;
 use App\Http\Controllers\CommissionRateImportController;
 use App\Http\Controllers\GridstoreController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -583,6 +584,8 @@ Route::middleware(['CheckInstallation'])->group(function () {
                 Route::get('/payslips/edit/{id}', [PayslipsController::class, 'edit'])->middleware(['customcan:edit_payslips', 'checkAccess:App\Models\Payslip,payslips,id,payslips']);
                 Route::post('/payslips/update', [PayslipsController::class, 'update'])->middleware(['customcan:edit_payslips', 'log.activity']);
                 Route::get('/payslips/view/{id}', [PayslipsController::class, 'view'])->middleware(['checkAccess:App\Models\Payslip,payslips,id,payslips']);
+                // download pdf
+                Route::get('/payslips/{id}/download-pdf', [PayslipsController::class, 'downloadPDF'])->name('payslips.download-pdf');
             });
             Route::middleware(['customcan:manage_allowances'])->group(function () {
                 Route::get('/allowances', [AllowancesController::class, 'index']);
@@ -790,6 +793,9 @@ Route::get('/grid-upload-log', [CommissionRateImportController::class, 'gridUplo
 Route::post('/update-commission-rates', [CommissionRateImportController::class, 'updateCommissionRates'])->name('update.commission.rates');
     Route::delete('/delete-commission-log/{id}', [CommissionRateImportController::class, 'deleteCommissionRates'])->name('delete.commission.log');  
 
+    // for active and deactive gird status
+Route::post('/update-grid-status', [CommissionRateImportController::class, 'updategridstatus'])->name('update.grid.status');
+
 
 // agent routes
 
@@ -797,6 +803,33 @@ Route::get('/agent/documents', [PolicyDocumentController::class, 'agentdocuments
 Route::get('/products', [PolicyController::class, 'getProductsByCompany'])->name('policies.getProductsByCompany');
 
 // agent routes
+// for pending policy
+Route::get('/pending', [PolicyDocumentController::class, 'pendingdocuments'])->name('pending.policies.documents');
+Route::post('/pending/documents/store/{id}', [PolicyDocumentController::class, 'storePendingDocuments'])->name('pending.documents.store');
+// for pending policy
 
 
+
+// for testing purpose magma grid view
+Route::get('/magma-grid-view', [CommissionRateImportController::class, 'magmaGridView'])->name('magma.grid.view');
+Route::post('/commission-policy/show', [CommissionRateImportController::class, 'showmagmagrid'])->name('commission.policy.show');
+Route::post('/commission/policy/update', [CommissionRateImportController::class, 'updatemagmagrid'])->name('commission.policy.update');
+
+Route::get('/get-states-by-company', [CommissionRateImportController::class, 'getStatesByCompany'])->name('get.states.by.company');
+
+// for testing purpose magma grid view
+
+
+
+
+});
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('attendance/check-in', [AttendanceController::class, 'storeCheckIn'])->name('attendance.check-in');
+    Route::post('attendance/check-out', [AttendanceController::class, 'storeCheckOut'])->name('attendance.check-out');
+    Route::get('attendance/mark-status/{attendanceId}/{status}', [AttendanceController::class, 'markStatus'])->name('attendance.mark-status');
+    Route::get('/attendance/working-days/{userId}', [AttendanceController::class, 'getWorkingDays']);
 });

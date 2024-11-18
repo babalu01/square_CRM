@@ -17,6 +17,9 @@ use App\Models\CommissionRate;
 use App\Models\SpecialCondition;
 use App\Models\GridUploadLog;
 use App\Models\Client;
+use App\Models\CommissionPolicy;
+use App\Models\PoliciesCompany;
+
 
 class CommissionRateImportController extends Controller
 {
@@ -212,27 +215,7 @@ public function showCommissionRates($uploadId)
     $colheaders = [
         'vehicle_categories' => [], // This will hold vehicle categories with their sections
     ];
-    // $commissionRates = State::with(['region', 'commissionRates.vehicleCategory', 'commissionRates.section'])
-    //     ->whereHas('commissionRates', function($query) use ($uploadId) {
-    //         $query->where('upload_id', $uploadId); // Filter by upload_id
-    //     })->get()->map(function ($state) {
-    //         return [
-    //             'state_name' => $state->name,
-    //             'region_name' => $state->region ? $state->region->name : null,
-    //             'commission_rates' => $state->commissionRates->groupBy(function($rate) {
-    //                 return $rate->vehicle_category_id . '-' . $rate->value; // Group by vehicle_category_id and value
-    //             })->map(function ($rates) {
-    //                 return $rates->map(function ($rate) {
-    //                     return [
-    //                         'vehicle_category' => $rate->vehicleCategory->name,
-    //                         'section' => $rate->section ? $rate->section->name : null,
-    //                         'value' => $rate->value,
-    //                         'commission_rate_id' => $rate->id // Include commission rate ID
-    //                     ];
-    //                 });
-    //             })->values() // Flatten the grouped results
-    //         ];
-    //     });
+   
     $commissionRates = State::with(['region', 'commissionRates.vehicleCategory', 'commissionRates.section'])
         ->whereHas('commissionRates', function($query) use ($uploadId) {
             $query->where('upload_id', $uploadId); // Filter by upload_id
@@ -278,7 +261,6 @@ public function showCommissionRates($uploadId)
                     })->values()
             ];
         })->filter(); // Remove null entries
-        // dd($commissionRates);
 
     // Prepare the colheaders structure with vehicle categories and sections
     foreach ($commissionRates as $stateData) {
@@ -340,6 +322,7 @@ if(getAuthenticatedUser()->hasRole('client') && (getAuthenticatedUser()->hasVeri
     if ($request->commissionrate_ids) {
         foreach ($request->commissionrate_ids as $regionName => $states) {
             $region = Region::firstOrCreate(['name' => $regionName]);
+            dd($region);
             foreach ($states as $stateName => $circles) {
                 $state = State::firstOrCreate(['name' => $stateName, 'region_id' => $region->id]);
                 foreach ($circles as $circleName => $vehicleTypes) {
@@ -384,14 +367,136 @@ public function deleteCommissionRates(Request $request)
     }
 
     $uploadId = $request->input('upload_id');
-    CommissionRate::where('upload_id', $uploadId)->delete();
+    CommissionPolicy::where('upload_id', $uploadId)->delete();
     gridUploadLog::where('upload_id', $uploadId)->delete();
 
     session()->flash('success', 'Commission rates and logs deleted successfully.');
     return redirect()->back()->with('success', 'Commission rates and logs deleted successfully.');
 }
+// for testing purpose magma grid view
+public function magmaGridView(Request $request)
+{
+    // $data = CommissionPolicy::all();
+$user = getAuthenticatedUser();
+    // Grouping the data
+    // $groupedData = $data->groupBy('company_id')->map(function ($companyGroup) {
+    //     return $companyGroup->groupBy('state')->map(function ($stateGroup) {
+    //         return $stateGroup->groupBy('vehicle_type');
+    //     });
+    // });
+    if(getAuthenticatedUser()->hasRole('client')){
 
+$deductions=getAuthenticatedUser()->gridGroup()->first();
+$deduction=(int)$deductions->value;
+// dd($deduction);
+    }else{
+        $deduction=0;
+    }
+    $uploadalogs = GridUploadLog::get();
+    $companies = PoliciesCompany::all();
+    $states = State::all();
 
+    return view('grid.magmaview',  compact('companies', 'states','deduction','uploadalogs','user'));
+}
+public function showmagmagrid(Request $request)
+{
+    $request->validate([
+        'company_id' => 'nullable|exists:policies_company,id',
+        'upload_id' => 'nullable|string',
+        'state_id' => 'required|exists:states,id',
+    ]);
+// dd($request->all());
+    // featch active upload id
+if($request->upload_id){
+    $uploadId = $request->upload_id;
+}else{
+    $uploadId = GridUploadLog::where('comany_name', $request->company_id)->where('activation_status', 1)->first()->upload_id;
+}
+    // dd($uploadId);
+    // featch active upload id
+    $commissionPolicies = CommissionPolicy::where('company_id', $request->company_id)->where('upload_id',$uploadId)
+        ->where('state', $request->state_id)
+        ->join('vehicle_categories', 'commission_policy.vehicle_type', '=', 'vehicle_categories.id') // Join with vehicle_types table
+        ->join('states', 'commission_policy.state', '=', 'states.id') // Join with states table
+        ->select('commission_policy.*', 'vehicle_categories.name as vehicle_type_name', 'states.name as state_name') // Select necessary fields
+        ->get();
+// dd ($commissionPolicies);    
+    return response()->json($commissionPolicies);
+}
+
+public function updatemagmagrid(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer',
+        'amount' => 'required|numeric',
+        'basis' => 'required|string',
+    ]);
+// dd($request->all());
+    $policy = CommissionPolicy::find($request->id);
+    if ($policy) {
+        $policy->amount = $request->amount;
+        $policy->basis = $request->basis;
+        $policy->save();
+
+        return response()->json(['success' => true, 'message' => 'Policy updated successfully.']);
+    }
+
+    return response()->json(['success' => false, 'message' => 'Policy not found.'], 404);
+}
+
+// get state by company
+public function getStatesByCompany(Request $request)
+{
+    // dd($request->all());
+    $companyId = $request->input('company_id');
+    $uploadId = $request->input('upload_id');
+    if($companyId){
+    // Correct the table name to match the model's table name
+    $states = CommissionPolicy::where('company_id', $companyId)
+        ->leftJoin('states', 'states.id', '=', 'commission_policy.state') // Use 'commission_policy' instead of 'commission_policies'
+        ->leftJoin('regions', 'regions.id', '=', 'states.region_id') // Join with regions table
+        ->distinct() // Ensure unique states based on state_id
+        ->get(['states.id', 'states.name as state_name', 'regions.name as region_name']) // Fetch both the state ID and state name, and region name
+        ->unique('id'); // Ensure unique states by their ID
+    }else{
+        $states = CommissionPolicy::where('upload_id', $uploadId)
+        ->leftJoin('states', 'states.id', '=', 'commission_policy.state') // Use 'commission_policy' instead of 'commission_policies'
+        ->leftJoin('regions', 'regions.id', '=', 'states.region_id') // Join with regions table
+        ->distinct() // Ensure unique states based on state_id
+        ->get(['states.id', 'states.name as state_name', 'regions.name as region_name']) // Fetch both the state ID and state name, and region name
+        ->unique('id'); // Ensure unique states by their ID  
+    }
+    return response()->json($states);
 }
 
 
+// for active and deactive gird status
+public function updategridstatus(Request $request)
+{
+    // Validate the request data
+    $request->validate([
+        'log_id' => 'required|integer',
+        'company_id' => 'required|integer',
+    ]);
+
+    // Update the activation status of the grid upload log for the given company_id
+    GridUploadLog::where('comany_name', $request->company_id)
+        ->where('activation_status', 1)
+        ->update(['activation_status' => 0]);
+
+    // Then update the activation status for the requested log_id
+    $log = GridUploadLog::find($request->log_id);
+    if ($log) {
+        $log->activation_status = 1;
+        $log->save();
+
+        // Flash a success message to the session
+        session()->flash('success', 'Grid status updated successfully.');
+        return back();
+    }
+
+    // Flash an error message to the session
+    session()->flash('error', 'Log not found.');
+    return response()->json(['success' => false, 'message' => 'Log not found.'], 404);
+}
+}

@@ -11,7 +11,7 @@ class PolicyExport implements FromCollection, WithHeadings
 
     public function __construct($policies)
     {
-        $this->policies = $policies;
+        $this->policies = collect($policies);
     }
 
     public function collection()

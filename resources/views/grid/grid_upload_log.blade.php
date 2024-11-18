@@ -4,6 +4,10 @@
 @php
 $user = getAuthenticatedUser();
 @endphp
+{{-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> --}}
+{{-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> --}}
+{{-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> --}}
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-800">Grid Upload Log</h1>
@@ -24,7 +28,7 @@ $user = getAuthenticatedUser();
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Upload ID</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Agent Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created Month</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -35,17 +39,12 @@ $user = getAuthenticatedUser();
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->id }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->upload_id }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $log->comany_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ $log->policiesCompany->company_name ?? "" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($log->agent_id)
-                        @php
-                        $agentIds = explode(',', $log->agent_id); // Convert string to array
-                        $clients = App\Models\Client::whereIn('id', $agentIds)->get(); // Fetch clients based on IDs
-                        @endphp
-                        @foreach($clients as $client)
-                            {{ $client->first_name }} {{ $client->last_name }}@if(!$loop->last)<br> @endif
-                        @endforeach
-                        @endif
+                        <span class="badge {{ $log->activation_status == 1 ? 'bg-success' : 'bg-danger' }} cursor-pointer" data-toggle="modal" data-target="#exampleModal{{ $log->id }}">
+                            {{ $log->activation_status == 1 ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ $log->created_month }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{{ route('commission.rates', $log->upload_id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
@@ -61,6 +60,34 @@ $user = getAuthenticatedUser();
                 </td>
                 @endif
                 </tr>
+
+
+                {{-- Modal for confirmation --}}
+                <div class="modal fade" id="exampleModal{{ $log->id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirm Status Change</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to change the status of this log?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <form action="{{ route('update.grid.status') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <input type="hidden" name="log_id" value="{{ $log->id }}">
+                                    <input type="hidden" name="company_id" value="{{ $log->comany_name }}">
+                                    <button type="submit" class="btn btn-primary">Confirm</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- End of Modal for confirmation --}}
                 @endforeach
             </tbody>
         </table>
@@ -80,37 +107,28 @@ $user = getAuthenticatedUser();
                 <div class="mt-2">
                     <form action="{{ route('import.commissionRates') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        
-                        <div class="mb-4">
-                            <p class="text-sm text-danger">Adding grid for admin. No client selection required.</p>
-                            <label for="client" class="block text-sm font-medium text-gray-700 mb-2">Select Clients</label>
-                            <select id="client" name="client_id[]" multiple class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                {{-- <option value="">Select clients</option> --}}
-                                @foreach($clients as $client)
-                                    <option value="{{ $client->id }}">{{ $client->first_name }} {{$client->last_name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
+                    
                         <div class="mb-4">
                             <label for="company" class="block text-sm font-medium text-gray-700 mb-2">Select Company</label>
                             <select id="company" name="company" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" required>
                                 <option value="">Select a company</option>
-                                <option value="SBI">SBI</option>
-                                <option value="SHRIRAM">SHRIRAM</option>
-                                <option value="TATA">TATA</option>
-                                <option value="MAGMA">MAGMA</option>
-                                <option value="ICICI">ICICI</option>
-                                <option value="DIGIT">DIGIT</option>
-                                <option value="ROYAL">ROYAL</option>
-                                <option value="RAHEJA QBE">RAHEJA QBE</option>
-                                <option value="LIBERTY">LIBERTY</option>
-                                <option value="BAJAJ">BAJAJ</option>
-                                <option value="CHOLA">CHOLA</option>
-                                <option value="HDFC ERGO">HDFC ERGO</option>
-                                <option value="UNITED INDIA">UNITED INDIA</option>
-                                <option value="RELIANCE">RELIANCE</option>
-                                <option value="TW_OTC">TW_OTC</option>
+                                <option value="Future Generali India Insurance Company">Future Generali India Insurance Company</option>
+                                <option value="TATA">Tata AIG General Insurance Co. Ltd.</option>
+                                <option value="CHOLA">Cholamandalam MS General Insurance Co. Ltd.</option>
+                                <option value="LIBERTY">Liberty General Insurance Ltd.</option>
+                                <option value="BAJAJ">Bajaj Allianz General Insurance Co. Ltd.</option>
+                                <option value="DIGIT">Go Digit General Insurance Ltd.</option>
+                                <option value="SHRIRAM">Shriram General Insurance Co. Ltd.</option>
+                                <option value="ROYAL">Royal Sundaram General Insurance Co. Ltd.</option>
+                                <option value="Universal Sompo General Insurance Co. Ltd.">Universal Sompo General Insurance Co. Ltd.</option>
+                                <option value="MAGMA">Magma HDI General Insurance Co. Ltd.</option>
+                                <option value="ICICI Lombard General Insurance Co. Ltd.">ICICI Lombard General Insurance Co. Ltd.</option>
+                                <option value="SBI">SBI General Insurance Co. Ltd.</option>
+                                <option value="United India Insurance Co. Ltd.">United India Insurance Co. Ltd.</option>
+                                <option value="Iffco Tokio General Insurance Co. Ltd.">Iffco Tokio General Insurance Co. Ltd.</option>
+                                <option value="HDFC Ergo General Insurance Co. Ltd.">HDFC Ergo General Insurance Co. Ltd.</option>
+                                <option value="National Insurance Co. Ltd.">National Insurance Co. Ltd.</option>
+                                <option value="RELIANCE">Reliance General Insurance Co. Ltd.</option>
                             </select>
                         </div>
 

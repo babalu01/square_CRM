@@ -40,7 +40,8 @@ class Client extends Authenticatable implements MustVerifyEmail
         'email_verification_mail_sent',
         'internal_purpose',
         'fcm_token',
-        'client_id' // Added fillable for client_id
+        'client_id' ,// Added fillable for client_id
+        'grid_group'
     ];
 
     /**
@@ -210,6 +211,10 @@ class Client extends Authenticatable implements MustVerifyEmail
 
         return Payslip::where('created_by', 'c_' . $this->getKey())
             ->where('workspace_id', $workspaceId);
+    }
+    public function gridGroup()
+    {
+        return $this->belongsTo(GridGroup::class, 'grid_group'); // Assuming 'grid_group_id' is the foreign key
     }
 
     public function role()

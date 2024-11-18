@@ -34,4 +34,9 @@ class GridUploadLog extends Model
     {
         return $this->belongsTo(Client::class, 'agent_id', 'id');
     }
+
+    public function policiesCompany(): BelongsTo
+    {
+        return $this->belongsTo(PoliciesCompany::class, 'comany_name', 'id'); // Corrected connection to PoliciesCompany table
+    }
 }

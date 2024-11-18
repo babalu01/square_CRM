@@ -127,6 +127,15 @@
                         <input class="form-control" type="file" id="profile" name="profile">
                         <p class="text-muted mt-2"><?= get_label('allowed_jpg_png', 'Allowed JPG or PNG.') ?></p>
                     </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="grid_group" class="form-label"><?= get_label('grid_group', 'Grid Group') ?></label>
+                        <select class="form-select" id="grid_group" name="grid_group">
+                            <option value="" disabled selected><?= get_label('select_grid_group', 'Select Grid Group') ?></option>
+                            @foreach($grid_groups as $group)
+                                <option value="{{ $group->id }}">{{ $group->group_name }} {{$group->value}}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @if(isAdminOrHasAllDataAccess())
                     <div class="mb-3 col-md-6" id="statusDiv">
                         <label class="form-label" for=""><?= get_label('status', 'Status') ?> (<small class="text-muted mt-2"><?= get_label('deactivated_client_login_restricted', 'If Deactivated, the Client Won\'t Be Able to Log In to Their Account') ?></small>)</label>
@@ -139,6 +148,7 @@
                             </div>
                         </div>
                     </div>
+                   
                     <div class="mb-3 col-md-6" id="requireEvDiv">
                         <label class="form-label" for="">
                             <?= get_label('require_email_verification', 'Require email verification?') ?>

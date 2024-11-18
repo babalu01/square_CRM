@@ -30,8 +30,17 @@
                  ondrop="handleFileSelect(event)" 
                  ondragover="handleDragOver(event)">
                 <input type="file" id="file" name="file" class="hidden" onchange="handleFileSelect(event)" required />
-                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                <p class="text-gray-600">Drag & drop your file here or click to select</p>
+                <i class="fas fa-file-excel text-4xl text-green-500 mb-4"></i>
+                <p class="text-gray-600">Drag & drop your Excel file here or click to select</p>
+            </div>
+            
+            <div id="uploadSectionPDF" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer mb-4" 
+                 onclick="document.getElementById('files').click()" 
+                 ondrop="handleFileSelectPDF(event)" 
+                 ondragover="handleDragOver(event)">
+                <input type="file" id="files" name="files[]" class="hidden" accept=".pdf" multiple onchange="handleFileSelectPDF(event)" required />
+                <i class="fas fa-file-pdf text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600">Drag & drop your PDF files here or click to select (multiple PDFs)</p>
             </div>
             
             <div id="progressSection" class="hidden bg-gray-100 rounded-lg p-6 mb-6">
@@ -88,6 +97,12 @@
         document.getElementById('uploadSection').classList.remove('hidden');
         document.getElementById('progressSection').classList.add('hidden');
         document.getElementById('file').value = '';
+    }
+
+    function handleFileSelectPDF(event) {
+        // Handle PDF file selection
+        event.preventDefault();
+        // Additional logic for handling PDF uploads can be added here
     }
 </script>
 @endsection

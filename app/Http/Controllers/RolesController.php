@@ -153,7 +153,7 @@ class RolesController extends Controller
     public function create_permission()
     {
         // $createProjectsPermission = Permission::findOrCreate('create_tasks', 'client');
-        Permission::create(['name' => 'delete_grid', 'guard_name' => 'client']);
+        Permission::create(['name' => 'create_documents', 'guard_name' => 'client']);
     }
 
     /**
